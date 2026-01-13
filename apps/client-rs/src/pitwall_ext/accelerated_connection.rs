@@ -74,16 +74,29 @@ impl AcceleratedReplayConnection {
         let channels = Driver::spawn(provider);
 
         // Wait for first frame to be available via broadcast
-        let mut rx = channels.frame_tx.subscribe();
+        let mut frame_rx = channels.frame_tx.subscribe();
         let timeout = Duration::from_secs(5);
-        let wait_result = tokio::time::timeout(timeout, async {
+        let frame_result = tokio::time::timeout(timeout, async {
             // Wait for first frame via broadcast receiver
-            rx.recv().await.ok()
+            frame_rx.recv().await.ok()
         })
         .await;
 
-        if wait_result.is_err() || wait_result.as_ref().ok().and_then(|o| o.as_ref()).is_none() {
+        if frame_result.is_err() || frame_result.as_ref().ok().and_then(|o| o.as_ref()).is_none() {
             warn!("Timeout waiting for first frame from replay file");
+        }
+
+        // Wait for session info to be available (parsed from YAML in background task)
+        let mut session_rx = channels.session_tx.subscribe();
+        let session_result = tokio::time::timeout(timeout, async {
+            session_rx.recv().await.ok()
+        })
+        .await;
+
+        if session_result.is_err()
+            || session_result.as_ref().ok().and_then(|o| o.as_ref()).is_none()
+        {
+            warn!("Timeout waiting for session info from replay file");
         }
 
         info!(

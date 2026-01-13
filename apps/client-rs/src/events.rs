@@ -1,5 +1,8 @@
 use std::sync::Arc;
 
+use uuid::Uuid;
+
+use crate::api::{SessionFrame, TelemetryFrame as ApiTelemetryFrame};
 use crate::telem::TelemetryFrame;
 use eventbus::EventLike;
 
@@ -44,5 +47,13 @@ impl EventLike for RacingEvent {
 pub struct LapCompletePayload {
     pub lap_number: i32,
     pub lap_time_ms: Option<u64>,
+    /// Lap time in seconds (from last_lap_time telemetry field).
+    pub lap_time: Option<f64>,
     pub frame_count: usize,
+    /// Telemetry frames collected during this lap (converted to API format).
+    pub frames: Arc<Vec<ApiTelemetryFrame>>,
+    /// UUID for this lap (used for server upload).
+    pub lap_id: Uuid,
+    /// Session metadata from the replay/live session.
+    pub session: Arc<SessionFrame>,
 }

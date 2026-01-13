@@ -1,6 +1,8 @@
-use client_rs::run_events;
+use client_rs::{api::TelemetryFrame, run_events};
 use tracing::info;
 use tracing_subscriber::{EnvFilter, fmt};
+
+use client_rs::api;
 
 #[tokio::main]
 async fn main() {
@@ -22,10 +24,30 @@ async fn main() {
 
     println!("Hello World!");
 
+    let client = api::ServerAPIClient::new(String::from("http://localhost:8000")).unwrap();
+
+    if !client.load_stored_token().await.unwrap() {
+        client.authenticate("sawyer_laptop").await.unwrap();
+    }
+
+    let boundaries = client.fetch_track_boundaries().await.unwrap();
+    // let id = boundaries.boundaries[0].id;
+
+    let my_boundary = client
+        .fetch_track_boundary(boundaries.boundaries[0].id)
+        .await
+        .unwrap();
+
+    let debug_str = format!(
+        "[Boundary] Track: {}, # points: {}",
+        my_boundary.track_name, my_boundary.source_left_frames
+    );
+    println!("{debug_str}");
+
     run_events().await;
 
     // read_telemetry().await;
 
-    tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+    // tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     println!("Main Done.");
 }
