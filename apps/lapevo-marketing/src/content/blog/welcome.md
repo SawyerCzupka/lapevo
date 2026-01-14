@@ -1,7 +1,7 @@
 ---
 title: "Welcome to LapEvo"
 description: "Introducing LapEvo - AI-powered telemetry analysis for sim racing."
-pubDate: 2024-12-31
+pubDate: 2026-01-12
 author: "LapEvo Team"
 tags: ["announcement", "getting-started"]
 ---
@@ -19,8 +19,10 @@ LapEvo is designed from the ground up for iRacing, with features that matter mos
 - **AI coaching insights** - Get personalized suggestions based on your driving patterns
 - **Lap comparison** - Overlay any two laps to see the differences
 
-## Join the Waitlist
+## Join the Community
 
-We're currently in private development and accepting early access signups. Join the waitlist to be among the first to try LapEvo when we launch.
+We're currently in active development and building LapEvo with input from the sim racing community. [Learn about our approach](/our-approach) to data, pricing, and what makes LapEvo different.
+
+Have ideas for features? We'd love to hear from you—your feedback shapes what we build.
 
 Stay fast!

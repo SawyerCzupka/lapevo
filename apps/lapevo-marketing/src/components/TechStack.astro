@@ -1,0 +1,63 @@
+---
+const techItems = [
+  {
+    category: "Telemetry Client",
+    tech: "Rust",
+    description: "Sub-millisecond frame processing with zero-copy adapters",
+  },
+  {
+    category: "Server",
+    tech: "Python + FastAPI",
+    description: "Async API with SQLAlchemy for rapid iteration",
+  },
+  {
+    category: "Database",
+    tech: "TimescaleDB",
+    description: "Time-series optimized for telemetry data patterns",
+  },
+  {
+    category: "Dashboard",
+    tech: "React 19 + TanStack Query",
+    description: "Modern UI with real-time data fetching",
+  },
+];
+---
+
+<section class="py-16 md:py-24">
+  <div class="mx-auto max-w-6xl px-6">
+    <!-- Section header -->
+    <div class="text-center mb-12">
+      <p class="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">
+        For the technically curious
+      </p>
+      <h2 class="text-2xl md:text-3xl font-bold">
+        Built for <span class="gradient-text">performance</span>
+      </h2>
+    </div>
+
+    <!-- Tech grid -->
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {techItems.map((item) => (
+        <div class="rounded-lg border border-border/50 bg-card/30 p-5 transition-colors hover:border-border">
+          <p class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
+            {item.category}
+          </p>
+          <p class="text-base font-semibold text-foreground mb-2">
+            {item.tech}
+          </p>
+          <p class="text-sm text-muted-foreground">
+            {item.description}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Architecture note -->
+    <div class="mt-8 text-center">
+      <p class="text-sm text-muted-foreground max-w-2xl mx-auto">
+        Rust handles performance-critical telemetry capture while Python enables rapid iteration
+        on analysis algorithms. The hybrid approach gives us the best of both worlds.
+      </p>
+    </div>
+  </div>
+</section>

@@ -8,12 +8,18 @@
       <!-- Header -->
       <div class="text-center mb-8">
         <h2 class="text-2xl md:text-3xl font-bold mb-3">
-          Get <span class="gradient-text">Early Access</span>
+          Help Shape <span class="gradient-text">LapEvo</span>
         </h2>
         <p class="text-muted-foreground">
-          Join the waitlist or share your ideas - email is optional for feedback
-          only.
+          Share your ideas and get notified at launch - email is optional for
+          feedback only.
         </p>
+        <a
+          href="/our-approach"
+          class="text-sm text-blue-400 hover:text-blue-300 mt-2 inline-block"
+        >
+          Learn about our approach to data and pricing →
+        </a>
       </div>
 
       <!-- Form -->
@@ -25,7 +31,8 @@
             class="block text-sm font-medium text-foreground mb-2"
           >
             Email address
-            <span class="text-muted-foreground">(required to join waitlist)</span
+            <span class="text-muted-foreground"
+              >(optional, required for launch notification)</span
             >
           </label>
           <input
@@ -101,9 +108,9 @@
     const hasFeature = featureInput.value.trim() !== "";
 
     if (hasEmail && hasFeature) {
-      submitBtn.textContent = "Join Waitlist & Submit Feedback";
+      submitBtn.textContent = "Get Notified & Submit Feedback";
     } else if (hasEmail) {
-      submitBtn.textContent = "Join the Waitlist";
+      submitBtn.textContent = "Get Notified at Launch";
     } else if (hasFeature) {
       submitBtn.textContent = "Submit Feedback";
     } else {
@@ -166,7 +173,9 @@
       }
     } catch (error: unknown) {
       const message =
-        error instanceof Error ? error.message : "Failed to submit. Please try again.";
+        error instanceof Error
+          ? error.message
+          : "Failed to submit. Please try again.";
       statusDiv.textContent = message;
       statusDiv.className = "text-center text-sm text-red-400";
       statusDiv.classList.remove("hidden");

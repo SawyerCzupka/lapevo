@@ -1,0 +1,285 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Our Approach"
+  description="Learn about LapEvo's approach to data, pricing, and building a sustainable sim racing tool."
+>
+  <Header currentPath="/our-approach" />
+  <main class="pt-32 pb-20">
+    <div class="mx-auto max-w-3xl px-6">
+      <!-- Page Header -->
+      <div class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          Our <span class="gradient-text">Approach</span>
+        </h1>
+        <p class="text-lg text-muted-foreground">
+          Transparency about how we're building LapEvo and what you can expect.
+        </p>
+      </div>
+
+      <!-- Content Sections -->
+      <div class="space-y-16">
+        <!-- Philosophy -->
+        <section>
+          <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"
+                ></path>
+              </svg>
+            </span>
+            Built by Racers, for Racers
+          </h2>
+          <div class="prose prose-invert max-w-none mb-10">
+            <p class="text-muted-foreground leading-relaxed">
+              LapEvo is a community-driven project. We're building the telemetry
+              analysis tool we wished existed—one that's transparent about how
+              it works, respects your data, and gets better based on real
+              feedback from sim racers.
+            </p>
+            <p class="text-muted-foreground leading-relaxed mt-4">
+              Your input directly shapes what we build. Feature requests,
+              feedback, and community discussion drive our roadmap. This isn't
+              just marketing speak—we genuinely want to build something useful
+              for the sim racing community.
+            </p>
+          </div>
+        </section>
+
+        <!-- Pricing Model -->
+        <section>
+          <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500/20 text-green-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
+              </svg>
+            </span>
+            Planned Pricing Model
+          </h2>
+          <div class="grid gap-4 md:grid-cols-2 mb-10">
+            <div class="rounded-xl border border-border bg-card p-6">
+              <div
+                class="inline-flex items-center gap-2 rounded-full bg-green-500/20 px-3 py-1 text-xs font-medium text-green-400 mb-3"
+              >
+                Free
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Self-Hosted</h3>
+              <p class="text-sm text-muted-foreground">
+                Run LapEvo on your own hardware with full functionality. You
+                control everything—your data stays on your machine unless you
+                choose otherwise.
+              </p>
+            </div>
+            <div class="rounded-xl border border-border bg-card p-6">
+              <div
+                class="inline-flex items-center gap-2 rounded-full bg-blue-500/20 px-3 py-1 text-xs font-medium text-blue-400 mb-3"
+              >
+                Paid
+              </div>
+              <h3 class="text-lg font-semibold mb-2">Managed Cloud</h3>
+              <p class="text-sm text-muted-foreground">
+                A hosted version for those who want convenience without running
+                infrastructure. Includes automatic updates, backups, and
+                support.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Data Transparency -->
+        <section>
+          <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/20 text-amber-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"
+                ></path>
+              </svg>
+            </span>
+            Data Transparency
+          </h2>
+          <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-6">
+            <p class="text-muted-foreground leading-relaxed mb-4">
+              We believe in being upfront about data practices. Here's how
+              telemetry data works in LapEvo:
+            </p>
+            <ul class="space-y-3">
+              <li class="flex items-start gap-3">
+                <span class="text-green-400 mt-1">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </span>
+                <span class="text-muted-foreground"
+                  ><strong class="text-foreground">Optional upload</strong> — Telemetry
+                  upload to our servers is on by default but can be disabled with
+                  one click. We'll never hide this setting.</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-green-400 mt-1">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </span>
+                <span class="text-muted-foreground"
+                  ><strong class="text-foreground">Why we collect data</strong>
+                  — Aggregated telemetry data helps us train machine learning models
+                  to provide better coaching insights. More data = better AI coaching
+                  for everyone.</span
+                >
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-green-400 mt-1">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </span>
+                <span class="text-muted-foreground"
+                  ><strong class="text-foreground">You stay in control</strong>
+                  — Your session data is always yours. Self-hosted users keep everything
+                  local. Even with uploads enabled, you can request data deletion
+                  at any time.</span
+                >
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Source Availability -->
+        <section>
+          <h2 class="text-2xl font-bold mb-4 flex items-center gap-3">
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"
+                ></path>
+              </svg>
+            </span>
+            Source Availability
+          </h2>
+          <div class="prose prose-invert max-w-none">
+            <p class="text-muted-foreground leading-relaxed">
+              We plan to make LapEvo's source code publicly viewable under a{
+                " "
+              }
+              <strong class="text-foreground">source-available license</strong>{
+                " "
+              }
+              (likely BSL 1.1 or Elastic License 2.0) once we release.
+            </p>
+            <p class="text-muted-foreground leading-relaxed mt-4">
+              What this means:
+            </p>
+            <ul class="mt-2 space-y-2 text-muted-foreground">
+              <li>You can inspect the code to see exactly how it works</li>
+              <li>You can modify it for personal use</li>
+              <li>
+                Commercial redistribution is restricted to ensure sustainable
+                development
+              </li>
+              <li>
+                We may transition to a fully open source license over time
+              </li>
+            </ul>
+            <p class="text-muted-foreground leading-relaxed mt-4">
+              This approach lets us be transparent while building a sustainable
+              project. We want LapEvo to exist and improve for years to come.
+            </p>
+          </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="text-center pt-8">
+          <p class="text-muted-foreground mb-6">
+            Have questions or feedback about our approach? We'd love to hear
+            from you.
+          </p>
+          <a
+            href="/#waitlist"
+            class="inline-flex rounded-lg bg-linear-to-r from-blue-500 to-blue-600 px-6 py-3 text-sm font-medium text-white transition-all hover:from-blue-600 hover:to-blue-700"
+          >
+            Share Your Thoughts
+          </a>
+        </section>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>

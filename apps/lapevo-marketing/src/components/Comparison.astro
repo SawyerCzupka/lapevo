@@ -1,40 +1,61 @@
 ---
 const comparisonPoints = [
   {
-    feature: "Real-time telemetry capture",
-    lapevo: true,
-    motec: true,
-    vrs: false,
+    feature: "Source-available",
+    lapevo: false,
+    lapevoNote: "Planned",
+    trophi: false,
   },
   {
-    feature: "AI-powered coaching insights",
+    feature: "Free to use",
     lapevo: true,
-    motec: false,
-    vrs: true,
+    lapevoNote: "Self-hosted",
+    trophi: false,
+    trophiNote: "7-day trial",
   },
   {
-    feature: "iRacing native integration",
+    feature: "Self-hostable",
     lapevo: true,
-    motec: false,
-    vrs: true,
+    trophi: false,
   },
   {
-    feature: "Corner-by-corner analysis",
+    feature: "iRacing support",
     lapevo: true,
-    motec: true,
-    vrs: true,
+    trophi: true,
   },
   {
-    feature: "Cloud storage & sync",
+    feature: "Post-session analysis",
     lapevo: true,
-    motec: false,
-    vrs: true,
+    trophi: true,
   },
   {
-    feature: "Free tier available",
+    feature: "Braking zone analysis",
     lapevo: true,
-    motec: false,
-    vrs: false,
+    trophi: true,
+  },
+  {
+    feature: "Corner-by-corner metrics",
+    lapevo: true,
+    trophi: true,
+  },
+  {
+    feature: "Real-time voice coaching",
+    lapevo: false,
+    lapevoNote: "Roadmap",
+    trophi: true,
+  },
+  {
+    feature: "Expert lap comparison",
+    lapevo: false,
+    lapevoNote: "Roadmap",
+    trophi: true,
+  },
+  {
+    feature: "Own your data",
+    lapevo: true,
+    lapevoNote: "Your server",
+    trophi: false,
+    trophiNote: "Their cloud",
   },
 ];
 ---
@@ -48,8 +69,8 @@ const comparisonPoints = [
         <span class="gradient-text">compares</span>
       </h2>
       <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
-        We combine the power of professional telemetry tools with modern AI and
-        seamless iRacing integration.
+        See how LapEvo compares to Trophi.ai, a commercial AI coaching platform.
+        LapEvo is community-driven and free to self-host—some features are still in development.
       </p>
     </div>
 
@@ -74,12 +95,7 @@ const comparisonPoints = [
               </div>
             </th>
             <th class="py-4 px-4 text-center">
-              <span class="text-sm font-medium text-muted-foreground"
-                >MoTeC</span
-              >
-            </th>
-            <th class="py-4 px-4 text-center">
-              <span class="text-sm font-medium text-muted-foreground">VRS</span>
+              <span class="text-sm font-medium text-muted-foreground">Trophi.ai</span>
             </th>
           </tr>
         </thead>
@@ -91,109 +107,92 @@ const comparisonPoints = [
                   {point.feature}
                 </td>
                 <td class="py-4 px-4 text-center">
-                  {point.lapevo ? (
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400">
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="3"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                  ) : (
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400">
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="3"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </span>
-                  )}
+                  <div class="inline-flex flex-col items-center gap-1">
+                    {point.lapevo ? (
+                      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400">
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </span>
+                    ) : point.lapevoNote ? (
+                      <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium">
+                        {point.lapevoNote}
+                      </span>
+                    ) : (
+                      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400">
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                    {point.lapevo && point.lapevoNote && (
+                      <span class="text-xs text-muted-foreground">{point.lapevoNote}</span>
+                    )}
+                  </div>
                 </td>
                 <td class="py-4 px-4 text-center">
-                  {point.motec ? (
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400">
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="3"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                  ) : (
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400">
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="3"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </span>
-                  )}
-                </td>
-                <td class="py-4 px-4 text-center">
-                  {point.vrs ? (
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400">
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="3"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </span>
-                  ) : (
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400">
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        stroke-width="3"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </span>
-                  )}
+                  <div class="inline-flex flex-col items-center gap-1">
+                    {point.trophi ? (
+                      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-500/20 text-green-400">
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </span>
+                    ) : point.trophiNote ? (
+                      <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-xs font-medium">
+                        {point.trophiNote}
+                      </span>
+                    ) : (
+                      <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-400">
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                    {point.trophi && point.trophiNote && (
+                      <span class="text-xs text-muted-foreground">{point.trophiNote}</span>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))
@@ -205,13 +204,13 @@ const comparisonPoints = [
     <!-- Bottom CTA -->
     <div class="mt-12 text-center">
       <p class="text-sm text-muted-foreground mb-4">
-        Join the waitlist and be among the first to experience LapEvo
+        Help guide development and get notified when LapEvo launches
       </p>
       <a
         href="#waitlist"
         class="inline-flex rounded-lg bg-linear-to-r from-blue-500 to-blue-600 px-6 py-3 text-sm font-medium text-white transition-all hover:from-blue-600 hover:to-blue-700"
       >
-        Get Early Access
+        Help Shape LapEvo
       </a>
     </div>
   </div>
