@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -18,9 +20,11 @@
   --color-border: oklch(1 0 0 / 10%);
   --color-input: oklch(1 0 0 / 15%);
 
-  /* Blue accent for LapEvo brand */
-  --color-accent-blue: oklch(0.65 0.2 250);
-  --color-accent-blue-light: oklch(0.75 0.18 250);
+  /* Teal accent for LapEvo brand */
+  --color-accent-teal: oklch(0.65 0.15 180);
+  --color-accent-teal-light: oklch(0.75 0.13 180);
+
+  --font-sans: "Inter";
 }
 
 @layer base {
@@ -34,18 +38,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
 /* Gradient text utility */
 .gradient-text {
-  @apply bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent;
+  @apply bg-linear-to-r from-teal-400 to-teal-600 bg-clip-text text-transparent;
 }
 
 /* Focus styles */
 @layer base {
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-blue-500;
+    @apply outline-2 outline-offset-2 outline-teal-500;
   }
 }

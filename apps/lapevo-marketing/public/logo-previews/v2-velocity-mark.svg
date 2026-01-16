@@ -1,5 +1,0 @@
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Velocity mark - abstract speed/direction indicator -->
-  <rect width="32" height="32" rx="6" fill="#0f172a"/>
-  <polygon points="6,16 14,8 14,13 26,13 26,19 14,19 14,24" fill="#3b82f6"/>
-</svg>

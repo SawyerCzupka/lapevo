@@ -1,7 +1,0 @@
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Apex mark - racing line hitting the apex, abstract corner -->
-  <rect width="32" height="32" rx="6" fill="#0f172a"/>
-  <path d="M6 8 L6 16 Q6 24 14 24 L26 24" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="6" cy="8" r="2.5" fill="#60a5fa"/>
-  <circle cx="26" cy="24" r="2.5" fill="#60a5fa"/>
-</svg>

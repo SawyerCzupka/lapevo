@@ -1,6 +1,0 @@
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Abstract track segment - curved sector -->
-  <rect width="32" height="32" rx="6" fill="#0f172a"/>
-  <path d="M8 26 Q4 16 12 8 Q20 0 28 8" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M12 24 Q10 18 14 12 Q18 6 24 10" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" fill="none"/>
-</svg>

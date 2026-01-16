@@ -1,8 +1,0 @@
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Data prism - triangular form with internal structure -->
-  <rect width="32" height="32" rx="6" fill="#0f172a"/>
-  <polygon points="16,4 28,26 4,26" stroke="#3b82f6" stroke-width="2" fill="none"/>
-  <line x1="16" y1="4" x2="16" y2="26" stroke="#3b82f6" stroke-width="1.5"/>
-  <line x1="10" y1="15" x2="22" y2="15" stroke="#60a5fa" stroke-width="1.5"/>
-  <circle cx="16" cy="15" r="3" fill="#3b82f6"/>
-</svg>

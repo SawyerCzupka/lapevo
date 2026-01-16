@@ -1,6 +1,0 @@
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Split diamond - Jira inspired, represents two data points converging -->
-  <rect width="32" height="32" rx="6" fill="#0f172a"/>
-  <path d="M16 4 L24 12 L16 16 L8 12 Z" fill="#3b82f6"/>
-  <path d="M16 16 L24 20 L16 28 L8 20 Z" fill="#60a5fa"/>
-</svg>

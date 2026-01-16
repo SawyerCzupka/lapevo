@@ -1,6 +1,0 @@
-<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Angular sweep - abstracted lap/arc with sharp terminus -->
-  <rect width="32" height="32" rx="6" fill="#0f172a"/>
-  <path d="M6 22 Q6 10 16 8 Q26 6 26 16" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" fill="none"/>
-  <polygon points="26,16 22,12 22,20" fill="#60a5fa"/>
-</svg>
