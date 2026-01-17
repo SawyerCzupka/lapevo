@@ -1,4 +1,4 @@
-use client_rs::{api::TelemetryFrame, run_events};
+use client_rs::run_events;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, fmt};
 
@@ -30,19 +30,18 @@ async fn main() {
         client.authenticate("sawyer_laptop").await.unwrap();
     }
 
-    let boundaries = client.fetch_track_boundaries().await.unwrap();
-    // let id = boundaries.boundaries[0].id;
+    // let boundaries = client.fetch_track_boundaries().await.unwrap();
 
-    let my_boundary = client
-        .fetch_track_boundary(boundaries.boundaries[0].id)
-        .await
-        .unwrap();
+    // let my_boundary = client
+    //     .fetch_track_boundary(boundaries.boundaries[0].id)
+    //     .await
+    //     .unwrap();
 
-    let debug_str = format!(
-        "[Boundary] Track: {}, # points: {}",
-        my_boundary.track_name, my_boundary.source_left_frames
-    );
-    println!("{debug_str}");
+    // let debug_str = format!(
+    //     "[Boundary] Track: {}, # points: {}",
+    //     my_boundary.track_name, my_boundary.source_left_frames
+    // );
+    // println!("{debug_str}");
 
     run_events().await;
 

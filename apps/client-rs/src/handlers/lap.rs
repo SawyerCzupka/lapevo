@@ -11,6 +11,9 @@ use crate::api::{
 use crate::events::{LapCompletePayload, RacingEvent, RacingEventKind};
 use eventbus::{EventHandler, HandlerContext};
 
+const FRAME_BUFFER_CAPACITY: usize = 4000;
+const LAP_COMPLETION_THRESHOLD: f32 = 0.95;
+
 /// Detects lap completion by monitoring lap_number changes.
 ///
 /// On lap completion, this handler:
@@ -30,6 +33,20 @@ struct LapHandlerState {
     frame_buffer: Vec<ApiTelemetryFrame>,
     /// Lap time from the last frame's last_lap_time field.
     last_lap_time: Option<f64>,
+    last_distance_pct: f32,
+}
+
+impl Default for LapHandlerState {
+    fn default() -> Self {
+        LapHandlerState {
+            current_lap: -1,
+            frame_count: 0,
+            valid: true,
+            frame_buffer: Vec::with_capacity(FRAME_BUFFER_CAPACITY),
+            last_lap_time: None,
+            last_distance_pct: 0.0,
+        }
+    }
 }
 
 impl LapHandler {
@@ -37,13 +54,39 @@ impl LapHandler {
         Self {
             client,
             session,
-            state: Mutex::new(LapHandlerState {
-                current_lap: -1,
-                frame_count: 0,
-                valid: true,
-                frame_buffer: Vec::with_capacity(4000), // ~60 fps * ~60 seconds
-                last_lap_time: None,
-            }),
+            state: Mutex::new(LapHandlerState::default()),
+        }
+    }
+
+    /// Uploads lap telemetry to the server.
+    async fn upload_lap(
+        &self,
+        lap_number: i32,
+        lap_id: Uuid,
+        is_valid: bool,
+        frames: &[ApiTelemetryFrame],
+        lap_time: Option<f64>,
+    ) {
+        let lap_telemetry = LapTelemetry {
+            frames: frames.to_vec(),
+            lap_time,
+        };
+
+        match self
+            .client
+            .upload_lap(&lap_telemetry, &self.session, Some(lap_id), is_valid)
+            .await
+        {
+            Ok(response) => {
+                info!(
+                    "Uploaded lap {} (id: {}, server lap_id: {})",
+                    lap_number, lap_id, response.lap_id
+                );
+            }
+            Err(e) => {
+                warn!("Failed to upload lap {}: {}", lap_number, e);
+                // Continue anyway - downstream handlers can still process locally
+            }
         }
     }
 }
@@ -66,11 +109,11 @@ impl EventHandler<RacingEvent> for LapHandler {
         let mut state = self.state.lock().await;
         state.frame_count += 1;
 
-        // Convert frame to API format and buffer it
         let api_frame: ApiTelemetryFrame = frame.as_ref().into();
         state.frame_buffer.push(api_frame);
 
         // Track validity (on track surface = 3)
+        // More performant to add this check for each new frame to avoid scanning the entire vector later
         if state.valid && frame.track_surface != 3 {
             state.valid = false;
         }
@@ -82,55 +125,47 @@ impl EventHandler<RacingEvent> for LapHandler {
 
         // Detect lap change
         if frame.lap_number != state.current_lap && state.current_lap >= 0 {
-            let lap_number = state.current_lap;
-            let frame_count = state.frame_count;
-            let valid = state.valid;
-            let lap_time = state.last_lap_time;
+            // Ignore incomplete laps
+            if state.last_distance_pct < LAP_COMPLETION_THRESHOLD {
+                state.current_lap = frame.lap_number;
+                state.frame_buffer.clear();
+                info!(
+                    "Ignoring lap change to {} due to low lap distance percentage '{}'.",
+                    frame.lap_number, frame.lap_distance_pct
+                );
+                return;
+            }
 
             info!(
                 "Lap {} complete after {} frames. Valid: {}, Time: {:?}",
-                lap_number, frame_count, valid, lap_time
+                state.current_lap, state.frame_count, state.valid, state.last_lap_time
             );
 
+            // TODO: Ensure this is necessary, because this seems weird.
             // Take ownership of buffered frames
             let frames = std::mem::replace(
                 &mut state.frame_buffer,
-                Vec::with_capacity(4000),
+                Vec::with_capacity(FRAME_BUFFER_CAPACITY),
             );
             let frames = Arc::new(frames);
 
-            // Generate lap ID
+            // Generate lap ID and upload to server
             let lap_id = Uuid::new_v4();
-
-            // Upload lap telemetry to server
-            let lap_telemetry = LapTelemetry {
-                frames: frames.as_ref().clone(),
-                lap_time,
-            };
-
-            match self
-                .client
-                .upload_lap(&lap_telemetry, &self.session, Some(lap_id))
-                .await
-            {
-                Ok(response) => {
-                    info!(
-                        "Uploaded lap {} (id: {}, server lap_id: {})",
-                        lap_number, lap_id, response.lap_id
-                    );
-                }
-                Err(e) => {
-                    warn!("Failed to upload lap {}: {}", lap_number, e);
-                    // Continue anyway - downstream handlers can still process locally
-                }
-            }
+            self.upload_lap(
+                state.current_lap,
+                lap_id,
+                state.valid,
+                &frames,
+                state.last_lap_time,
+            )
+            .await;
 
             // Publish LapComplete event for downstream handlers
             ctx.publish(RacingEvent::LapComplete(LapCompletePayload {
-                lap_number,
-                lap_time_ms: lap_time.map(|t| (t * 1000.0) as u64),
-                lap_time,
-                frame_count,
+                lap_number: state.current_lap,
+                lap_time_ms: state.last_lap_time.map(|t| (t * 1000.0) as u64),
+                lap_time: state.last_lap_time,
+                frame_count: state.frame_count,
                 frames,
                 lap_id,
                 session: self.session.clone(),
@@ -143,6 +178,7 @@ impl EventHandler<RacingEvent> for LapHandler {
         }
 
         state.current_lap = frame.lap_number;
+        state.last_distance_pct = frame.lap_distance_pct;
         debug!("Lap {} frame {}", state.current_lap, state.frame_count);
     }
 }

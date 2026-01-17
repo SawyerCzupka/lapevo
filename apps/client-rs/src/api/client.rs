@@ -323,6 +323,7 @@ impl ServerAPIClient {
         lap: &LapTelemetry,
         session: &SessionFrame,
         lap_id: Option<Uuid>,
+        is_valid: bool,
     ) -> ApiResult<LapUploadResponse> {
         let url = format!("{}/api/v1/telemetry/lap", self.base_url);
 
@@ -337,6 +338,8 @@ impl ServerAPIClient {
             .authenticated_request(reqwest::Method::POST, &url)
             .await
             .json(&request_body);
+
+        request = request.query(&[("is_valid", is_valid)]);
 
         if let Some(id) = lap_id {
             request = request.query(&[("lap_id", id.to_string())]);
