@@ -186,7 +186,7 @@ async def compare_laps(
 
     logger.info(
         f"Compared laps {lap_id_1} vs {lap_id_2}: "
-        f"time delta = {comparison.summary.lap_time_delta:.3f}s, "
+        f"time delta = {comparison.summary.lap_time_delta}s, "
         f"matched {comparison.summary.matched_corners}/{comparison.summary.total_corners_baseline} corners"  # noqa: E501
     )
 
