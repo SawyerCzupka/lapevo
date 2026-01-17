@@ -13,11 +13,11 @@ export function LapCard({ lap, onClick, isSelected }: LapCardProps) {
   return (
     <div
       className={`cursor-pointer transition-all ${
-        isSelected ? 'ring-2 ring-blue-500/20' : ''
+        isSelected ? 'ring-2 ring-teal-500/20' : ''
       }`}
       onClick={onClick}
     >
-      <Card className={isSelected ? 'border-blue-500' : ''}>
+      <Card className={isSelected ? 'border-teal-500' : ''}>
         <CardContent className="py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">

@@ -143,7 +143,7 @@ export function DeviceAuthPage() {
           )}
 
           {isAlreadyProcessed && (
-            <div className="p-3 rounded-md bg-blue-900/20 border border-blue-800 text-blue-400 text-sm">
+            <div className="p-3 rounded-md bg-teal-900/20 border border-teal-800 text-teal-400 text-sm">
               This device has already been {device.status}.
             </div>
           )}

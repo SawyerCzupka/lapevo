@@ -107,7 +107,7 @@ export function RegisterPage() {
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex flex-col gap-4 mt-8">
           <Button
             type="submit"
             className="w-full"
@@ -117,7 +117,7 @@ export function RegisterPage() {
           </Button>
           <p className="text-sm text-gray-400 text-center">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-400 hover:underline">
+            <Link to="/login" className="text-teal-400 hover:underline">
               Sign in
             </Link>
           </p>

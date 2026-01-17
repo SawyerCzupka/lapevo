@@ -62,12 +62,12 @@ export function ComparePage() {
             </CardHeader>
             <CardContent>
               {lap1 ? (
-                <div className="p-4 border rounded-lg bg-blue-500/10 border-blue-500/30">
+                <div className="p-4 border rounded-lg bg-teal-500/10 border-teal-500/30">
                   <p className="font-medium text-white">Lap Selected</p>
                   <p className="text-sm text-gray-400">{lap1}</p>
                   <button
                     onClick={() => handleLapSelect(1, '')}
-                    className="mt-2 text-sm text-blue-400 hover:text-blue-300"
+                    className="mt-2 text-sm text-teal-400 hover:text-teal-300"
                   >
                     Change selection
                   </button>
@@ -152,7 +152,7 @@ export function ComparePage() {
                 onClick={() => {
                   setSearchParams(new URLSearchParams());
                 }}
-                className="text-blue-400 hover:text-blue-300"
+                className="text-teal-400 hover:text-teal-300"
               >
                 Select different laps
               </button>
@@ -200,7 +200,7 @@ export function ComparePage() {
                 {summary.lap_time_delta != null ? formatDelta(summary.lap_time_delta) : 'N/A'}
               </p>
               <div className="mt-2 text-sm">
-                <span className="text-blue-400">
+                <span className="text-teal-400">
                   {summary.baseline_lap_time ? formatLapTime(summary.baseline_lap_time) : '--:--.---'}
                 </span>
                 <span className="mx-2 text-gray-500">vs</span>
@@ -411,7 +411,7 @@ function LapSelector({
         <select
           value={selectedSession ?? ''}
           onChange={(e) => onSessionSelect(e.target.value)}
-          className="w-full px-4 py-2 text-white bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 text-white bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
         >
           <option value="">Choose a session...</option>
           {sessions.map((session) => (

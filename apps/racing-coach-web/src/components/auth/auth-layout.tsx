@@ -5,10 +5,8 @@ export function AuthLayout() {
     <div className="min-h-screen bg-gray-950 flex flex-col">
       {/* Simple header with logo */}
       <header className="p-6">
-        <Link to="/" className="flex items-center gap-2 w-fit">
-          <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">L</span>
-          </div>
+        <Link to="/" className="flex items-center gap-2 w-fit group">
+          <img src="/favicon.svg" alt="LapEvo" className="w-8 h-8 group-hover:scale-105 transition-transform" />
           <span className="text-xl font-bold text-white">LapEvo</span>
         </Link>
       </header>

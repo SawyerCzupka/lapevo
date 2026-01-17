@@ -97,7 +97,7 @@ export function SessionsPage() {
             <input
               type="text"
               placeholder="Filter by track or car..."
-              className="w-full px-4 py-2 text-white placeholder-gray-500 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 text-white placeholder-gray-500 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />

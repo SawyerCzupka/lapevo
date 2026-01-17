@@ -32,10 +32,8 @@ export function RootLayout() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-8">
-              <Link to="/dashboard" className="flex items-center gap-2">
-                <div className="w-7 h-7 bg-linear-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">L</span>
-                </div>
+              <Link to="/dashboard" className="flex items-center gap-2 group">
+                <img src="/favicon.svg" alt="LapEvo" className="w-7 h-7 group-hover:scale-105 transition-transform" />
                 <span className="text-xl font-bold text-white">LapEvo</span>
               </Link>
               <nav className="flex items-center gap-1">

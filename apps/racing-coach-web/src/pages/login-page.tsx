@@ -83,7 +83,7 @@ export function LoginPage() {
             )}
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4">
+        <CardFooter className="flex flex-col gap-4 mt-8">
           <Button
             type="submit"
             className="w-full"
@@ -93,7 +93,7 @@ export function LoginPage() {
           </Button>
           <p className="text-sm text-gray-400 text-center">
             Don't have an account?{' '}
-            <Link to="/register" className="text-blue-400 hover:underline">
+            <Link to="/register" className="text-teal-400 hover:underline">
               Create one
             </Link>
           </p>

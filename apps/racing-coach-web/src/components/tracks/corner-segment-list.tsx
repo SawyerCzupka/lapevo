@@ -123,7 +123,7 @@ export function CornerSegmentList({
             key={corner.id}
             className={`p-3 rounded-lg border cursor-pointer transition-colors ${
               isSelected
-                ? 'bg-blue-900/30 border-blue-600'
+                ? 'bg-teal-900/30 border-teal-600'
                 : 'bg-gray-800/50 border-gray-700 hover:border-gray-600'
             }`}
             onClick={() => onSelectCorner(corner.id)}
@@ -168,7 +168,7 @@ export function CornerSegmentList({
                     <label className="text-xs text-gray-400 block mb-1">Start</label>
                     <input
                       type="number"
-                      className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-sm focus:border-blue-500 focus:outline-none"
+                      className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-sm focus:border-teal-500 focus:outline-none"
                       value={corner.start_distance.toFixed(0)}
                       onChange={(e) =>
                         handleInputChange(
@@ -195,7 +195,7 @@ export function CornerSegmentList({
                     <label className="text-xs text-gray-400 block mb-1">End</label>
                     <input
                       type="number"
-                      className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-sm focus:border-blue-500 focus:outline-none"
+                      className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-white text-sm focus:border-teal-500 focus:outline-none"
                       value={corner.end_distance.toFixed(0)}
                       onChange={(e) =>
                         handleInputChange(
