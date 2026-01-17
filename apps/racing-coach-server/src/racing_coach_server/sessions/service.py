@@ -1,6 +1,7 @@
 """Service for session and lap management."""
 
 import logging
+from typing import Any
 from uuid import UUID
 
 from racing_coach_core.schemas.telemetry import SessionFrame
@@ -192,7 +193,7 @@ class SessionService:
         Returns:
             Lap: The created lap record
         """
-        lap_kwargs: dict = {
+        lap_kwargs: dict[str, Any] = {
             "track_session_id": track_session_id,
             "lap_number": lap_number,
             "lap_time": lap_time,

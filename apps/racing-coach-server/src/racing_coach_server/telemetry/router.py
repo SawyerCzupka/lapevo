@@ -28,6 +28,7 @@ async def upload_lap(
     telemetry_service: TelemetryServiceDep,
     db: AsyncSessionDep,
     lap_id: UUID | None = None,
+    is_valid: bool = False,
 ) -> LapUploadResponse:
     """
     Upload a lap with telemetry data.
@@ -56,6 +57,7 @@ async def upload_lap(
                 track_session_id=db_track_session.id,
                 lap_number=lap_number,
                 lap_id=lap_id,
+                is_valid=is_valid,
             )
 
             # Add telemetry sequence

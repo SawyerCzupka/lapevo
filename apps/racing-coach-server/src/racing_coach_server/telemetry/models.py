@@ -32,7 +32,7 @@ class TrackSession(TimestampMixin, Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True)
     track_id: Mapped[int] = mapped_column(Integer, nullable=False)
     track_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    track_config_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    track_config_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     track_type: Mapped[str] = mapped_column(String(50), nullable=False)
     car_id: Mapped[int] = mapped_column(Integer, nullable=False)
     car_name: Mapped[str] = mapped_column(String(255), nullable=False)
