@@ -22,8 +22,8 @@ export function LapCard({ lap, onClick, isSelected }: LapCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="flex flex-col">
-                <span className="text-sm text-gray-400">Lap {lap.lap_number}</span>
-                <span className="text-2xl font-mono font-bold text-white">
+                <span className="text-sm text-muted-foreground">Lap {lap.lap_number}</span>
+                <span className="text-2xl font-mono font-bold text-foreground">
                   {formatLapTime(lap.lap_time)}
                 </span>
               </div>
@@ -38,7 +38,7 @@ export function LapCard({ lap, onClick, isSelected }: LapCardProps) {
             </div>
           </div>
 
-          <div className="mt-2 text-xs text-gray-500">
+          <div className="mt-2 text-xs text-muted-foreground">
             {formatRelativeTime(lap.created_at)}
           </div>
         </CardContent>

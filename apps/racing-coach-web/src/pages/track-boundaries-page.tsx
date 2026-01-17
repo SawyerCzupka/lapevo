@@ -24,8 +24,8 @@ export function TrackBoundariesPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Track Boundaries</h2>
-          <p className="text-gray-400">Manage track boundary data for lateral position analysis</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Track Boundaries</h2>
+          <p className="text-muted-foreground">Manage track boundary data for lateral position analysis</p>
         </div>
         <Card>
           <LoadingState message="Loading track boundaries..." />
@@ -38,8 +38,8 @@ export function TrackBoundariesPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Track Boundaries</h2>
-          <p className="text-gray-400">Manage track boundary data for lateral position analysis</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Track Boundaries</h2>
+          <p className="text-muted-foreground">Manage track boundary data for lateral position analysis</p>
         </div>
         <Card>
           <ErrorState
@@ -54,8 +54,8 @@ export function TrackBoundariesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Track Boundaries</h2>
-          <p className="text-gray-400">Manage track boundary data for lateral position analysis</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Track Boundaries</h2>
+          <p className="text-muted-foreground">Manage track boundary data for lateral position analysis</p>
         </div>
         <div className="flex gap-4 items-center">
           <Badge variant="info">{boundaries?.length || 0} Tracks</Badge>
@@ -89,10 +89,10 @@ export function TrackBoundariesPage() {
                       onClick={() => navigate(`/tracks/${boundary.id}`)}
                     >
                       <TableCell>
-                        <span className="font-medium text-white">{boundary.track_name}</span>
+                        <span className="font-medium text-foreground">{boundary.track_name}</span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-gray-300">
+                        <span className="text-muted-foreground">
                           {boundary.track_config_name || 'Default'}
                         </span>
                       </TableCell>
@@ -100,7 +100,7 @@ export function TrackBoundariesPage() {
                         <Badge variant="default">{boundary.grid_size} points</Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-muted-foreground">
                           {formatDateTime(boundary.created_at)}
                         </span>
                       </TableCell>

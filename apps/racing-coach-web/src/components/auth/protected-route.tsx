@@ -13,7 +13,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Spinner className="h-12 w-12" />
       </div>
     );

@@ -91,12 +91,12 @@ export function TrackBoundaryUploadPage() {
       <div>
         <button
           onClick={() => navigate('/tracks')}
-          className="flex items-center gap-1 mb-2 text-sm text-gray-400 hover:text-white"
+          className="flex items-center gap-1 mb-2 text-sm text-muted-foreground hover:text-foreground"
         >
           &larr; Back to Track Boundaries
         </button>
-        <h2 className="text-3xl font-bold tracking-tight text-white">Upload Track Boundary</h2>
-        <p className="text-gray-400">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">Upload Track Boundary</h2>
+        <p className="text-muted-foreground">
           Upload an IBT file containing boundary laps to generate track boundary data
         </p>
       </div>
@@ -125,7 +125,7 @@ export function TrackBoundaryUploadPage() {
                 type="file"
                 accept=".ibt"
                 onChange={handleFileChange}
-                className="cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-700 file:text-gray-200 hover:file:bg-gray-600"
+                className="cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-muted file:text-foreground hover:file:bg-muted/80"
               />
               {fileError && <p className="text-sm text-red-400">{fileError}</p>}
               {file && (
@@ -142,7 +142,7 @@ export function TrackBoundaryUploadPage() {
                 {errors.leftLapNumber && (
                   <p className="text-sm text-red-400">{errors.leftLapNumber.message}</p>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   The lap where you drove along the left edge
                 </p>
               </div>
@@ -153,7 +153,7 @@ export function TrackBoundaryUploadPage() {
                 {errors.rightLapNumber && (
                   <p className="text-sm text-red-400">{errors.rightLapNumber.message}</p>
                 )}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   The lap where you drove along the right edge
                 </p>
               </div>
@@ -165,7 +165,7 @@ export function TrackBoundaryUploadPage() {
               {errors.gridSize && (
                 <p className="text-sm text-red-400">{errors.gridSize.message}</p>
               )}
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Resolution of the boundary grid (default: 1000)
               </p>
             </div>

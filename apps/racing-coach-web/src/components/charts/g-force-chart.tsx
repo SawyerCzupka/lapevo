@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import type { TelemetryFrame } from '@/lib/types';
+import { chartColors, plotLayout } from '@/lib/chart-colors';
 
 interface GForceChartProps {
   telemetry: TelemetryFrame[];
@@ -21,7 +22,7 @@ export function GForceChart({ telemetry, height = 300 }: GForceChartProps) {
         mode: 'lines' as const,
         name: 'Lateral G',
         line: {
-          color: '#a78bfa',
+          color: chartColors.lateralG,
           width: 2,
         },
         hovertemplate: '%{y:.2f}G<extra></extra>',
@@ -33,7 +34,7 @@ export function GForceChart({ telemetry, height = 300 }: GForceChartProps) {
         mode: 'lines' as const,
         name: 'Longitudinal G',
         line: {
-          color: '#fb923c',
+          color: chartColors.longitudinalG,
           width: 2,
         },
         hovertemplate: '%{y:.2f}G<extra></extra>',
@@ -44,22 +45,19 @@ export function GForceChart({ telemetry, height = 300 }: GForceChartProps) {
   const layout = useMemo(
     () => ({
       height,
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(17, 24, 39, 0.5)',
-      font: {
-        color: '#e5e7eb',
-        family: 'system-ui, -apple-system, sans-serif',
-      },
+      paper_bgcolor: plotLayout.paper_bgcolor,
+      plot_bgcolor: plotLayout.plot_bgcolor,
+      font: plotLayout.font,
       margin: { l: 60, r: 40, t: 40, b: 60 },
       xaxis: {
         title: { text: 'Distance (m)' },
-        gridcolor: '#374151',
-        zerolinecolor: '#4b5563',
+        gridcolor: plotLayout.gridcolor,
+        zerolinecolor: plotLayout.zerolinecolor,
       },
       yaxis: {
         title: { text: 'G-Force' },
-        gridcolor: '#374151',
-        zerolinecolor: '#4b5563',
+        gridcolor: plotLayout.gridcolor,
+        zerolinecolor: plotLayout.zerolinecolor,
       },
       hovermode: 'x unified' as const,
       legend: {

@@ -91,7 +91,7 @@ export function LoginPage() {
           >
             {loginMutation.isPending ? 'Signing in...' : 'Sign in'}
           </Button>
-          <p className="text-sm text-gray-400 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Don't have an account?{' '}
             <Link to="/register" className="text-teal-400 hover:underline">
               Create one

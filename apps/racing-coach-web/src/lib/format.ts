@@ -80,7 +80,7 @@ export function formatDelta(seconds: number): string {
 export function getDeltaColor(delta: number): string {
   if (delta < -0.01) return 'text-green-400'; // Faster (negative delta)
   if (delta > 0.01) return 'text-red-400'; // Slower (positive delta)
-  return 'text-gray-400'; // Neutral
+  return 'text-muted-foreground'; // Neutral
 }
 
 /**

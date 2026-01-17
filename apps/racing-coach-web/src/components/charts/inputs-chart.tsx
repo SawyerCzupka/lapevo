@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import Plot from 'react-plotly.js';
 import type { TelemetryFrame } from '@/lib/types';
+import { chartColors, plotLayout } from '@/lib/chart-colors';
 
 interface InputsChartProps {
   telemetry: TelemetryFrame[];
@@ -21,7 +22,7 @@ export function InputsChart({ telemetry, height = 300 }: InputsChartProps) {
         mode: 'lines' as const,
         name: 'Throttle',
         line: {
-          color: '#22c55e',
+          color: chartColors.throttle,
           width: 2,
         },
         hovertemplate: '%{y:.1f}%<extra></extra>',
@@ -33,7 +34,7 @@ export function InputsChart({ telemetry, height = 300 }: InputsChartProps) {
         mode: 'lines' as const,
         name: 'Brake',
         line: {
-          color: '#ef4444',
+          color: chartColors.brake,
           width: 2,
         },
         hovertemplate: '%{y:.1f}%<extra></extra>',
@@ -44,22 +45,19 @@ export function InputsChart({ telemetry, height = 300 }: InputsChartProps) {
   const layout = useMemo(
     () => ({
       height,
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(17, 24, 39, 0.5)',
-      font: {
-        color: '#e5e7eb',
-        family: 'system-ui, -apple-system, sans-serif',
-      },
+      paper_bgcolor: plotLayout.paper_bgcolor,
+      plot_bgcolor: plotLayout.plot_bgcolor,
+      font: plotLayout.font,
       margin: { l: 60, r: 40, t: 40, b: 60 },
       xaxis: {
         title: { text: 'Distance (m)' },
-        gridcolor: '#374151',
-        zerolinecolor: '#4b5563',
+        gridcolor: plotLayout.gridcolor,
+        zerolinecolor: plotLayout.zerolinecolor,
       },
       yaxis: {
         title: { text: 'Input (%)' },
-        gridcolor: '#374151',
-        zerolinecolor: '#4b5563',
+        gridcolor: plotLayout.gridcolor,
+        zerolinecolor: plotLayout.zerolinecolor,
         range: [0, 105],
       },
       hovermode: 'x unified' as const,

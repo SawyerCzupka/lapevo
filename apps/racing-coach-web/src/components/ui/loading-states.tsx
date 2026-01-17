@@ -14,7 +14,7 @@ export function LoadingState({ message = 'Loading...' }: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center p-12 space-y-4">
       <Spinner />
-      <p className="text-gray-400">{message}</p>
+      <p className="text-muted-foreground">{message}</p>
     </div>
   );
 }
@@ -46,12 +46,12 @@ export function ErrorState({ error, retry }: ErrorStateProps) {
       </div>
       <div className="text-center space-y-2">
         <p className="text-red-400 font-medium">Error</p>
-        <p className="text-gray-400 text-sm max-w-md">{message}</p>
+        <p className="text-muted-foreground text-sm max-w-md">{message}</p>
       </div>
       {retry && (
         <button
           onClick={retry}
-          className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors"
+          className="px-4 py-2 bg-muted text-foreground rounded-md hover:bg-muted/80 transition-colors"
         >
           Try Again
         </button>
@@ -63,9 +63,9 @@ export function ErrorState({ error, retry }: ErrorStateProps) {
 export function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex flex-col items-center justify-center p-12 space-y-4">
-      <div className="rounded-full bg-gray-800 p-3">
+      <div className="rounded-full bg-muted p-3">
         <svg
-          className="h-8 w-8 text-gray-500"
+          className="h-8 w-8 text-muted-foreground"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -78,7 +78,7 @@ export function EmptyState({ message }: { message: string }) {
           />
         </svg>
       </div>
-      <p className="text-gray-400">{message}</p>
+      <p className="text-muted-foreground">{message}</p>
     </div>
   );
 }

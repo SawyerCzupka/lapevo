@@ -260,14 +260,14 @@ export function CornerSegmentEditorPage() {
         <div>
           <button
             onClick={() => navigate(`/tracks/${boundaryId}`)}
-            className="text-sm text-gray-400 hover:text-white mb-2 flex items-center gap-1"
+            className="text-sm text-muted-foreground hover:text-foreground mb-2 flex items-center gap-1"
           >
             &larr; Back to Track Boundary
           </button>
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
             Corner Segment Editor
           </h2>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-muted-foreground">
             {boundary.track_name}
             {boundary.track_config_name && ` - ${boundary.track_config_name}`}
           </p>
@@ -319,8 +319,8 @@ export function CornerSegmentEditorPage() {
             </CardHeader>
             <CardContent>
               {/* Usage instructions */}
-              <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-3 mb-4">
-                <p className="text-gray-300 text-sm">
+              <div className="bg-muted/50 border border-border rounded-lg p-3 mb-4">
+                <p className="text-muted-foreground text-sm">
                   <strong>Click anywhere on the track centerline</strong> to add a
                   new corner. Fine-tune distances in the sidebar. Scroll to zoom,
                   drag to pan.
@@ -330,12 +330,12 @@ export function CornerSegmentEditorPage() {
               {/* Lap overlay selector */}
               <div className="flex gap-4 mb-4">
                 <div className="flex-1">
-                  <label className="block text-sm text-gray-400 mb-1">
+                  <label className="block text-sm text-muted-foreground mb-1">
                     Reference Lap (optional)
                   </label>
                   <div className="flex gap-2">
                     <select
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white text-sm"
+                      className="flex-1 bg-muted border border-border rounded px-3 py-2 text-foreground text-sm"
                       value={selectedSessionId || ''}
                       onChange={(e) => {
                         setSelectedSessionId(e.target.value || null);
@@ -351,7 +351,7 @@ export function CornerSegmentEditorPage() {
                     </select>
                     {selectedSessionId && (
                       <select
-                        className="w-32 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white text-sm"
+                        className="w-32 bg-muted border border-border rounded px-3 py-2 text-foreground text-sm"
                         value={selectedLapId || ''}
                         onChange={(e) => setSelectedLapId(e.target.value || null)}
                       >

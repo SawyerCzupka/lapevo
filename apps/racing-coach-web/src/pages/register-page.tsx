@@ -94,7 +94,7 @@ export function RegisterPage() {
 
           <div className="space-y-2">
             <Label htmlFor="display_name">
-              Display Name <span className="text-gray-500">(optional)</span>
+              Display Name <span className="text-muted-foreground">(optional)</span>
             </Label>
             <Input
               id="display_name"
@@ -115,7 +115,7 @@ export function RegisterPage() {
           >
             {registerMutation.isPending ? 'Creating account...' : 'Create account'}
           </Button>
-          <p className="text-sm text-gray-400 text-center">
+          <p className="text-sm text-muted-foreground text-center">
             Already have an account?{' '}
             <Link to="/login" className="text-teal-400 hover:underline">
               Sign in

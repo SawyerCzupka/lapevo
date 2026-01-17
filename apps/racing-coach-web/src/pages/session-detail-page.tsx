@@ -35,8 +35,8 @@ export function SessionDetailPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Session Details</h2>
-          <p className="text-gray-400">Loading session information...</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Session Details</h2>
+          <p className="text-muted-foreground">Loading session information...</p>
         </div>
         <Card>
           <LoadingState message="Loading session..." />
@@ -49,8 +49,8 @@ export function SessionDetailPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Session Details</h2>
-          <p className="text-gray-400">Error loading session</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Session Details</h2>
+          <p className="text-muted-foreground">Error loading session</p>
         </div>
         <Card>
           <ErrorState error={error instanceof Error ? error : new Error('Failed to load session')} />
@@ -63,8 +63,8 @@ export function SessionDetailPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Session Details</h2>
-          <p className="text-gray-400">Session not found</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Session Details</h2>
+          <p className="text-muted-foreground">Session not found</p>
         </div>
         <Card>
           <EmptyState message="Session not found" />
@@ -88,11 +88,11 @@ export function SessionDetailPage() {
             ]}
             className="mb-3"
           />
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
             {session.track_name}
           </h2>
           {session.track_config_name && (
-            <p className="text-xl text-gray-400">{session.track_config_name}</p>
+            <p className="text-xl text-muted-foreground">{session.track_config_name}</p>
           )}
         </div>
         <Badge variant="info">{laps.length} Laps</Badge>
@@ -102,15 +102,15 @@ export function SessionDetailPage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Car</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Car</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-semibold text-white">{session.car_name}</p>
+            <p className="text-xl font-semibold text-foreground">{session.car_name}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Track Type</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Track Type</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-xl font-semibold text-white capitalize">{session.track_type}</p>
@@ -118,10 +118,10 @@ export function SessionDetailPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Date</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Date</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-semibold text-white">{formatDateTime(session.created_at)}</p>
+            <p className="text-xl font-semibold text-foreground">{formatDateTime(session.created_at)}</p>
           </CardContent>
         </Card>
       </div>
@@ -154,10 +154,10 @@ export function SessionDetailPage() {
                       onClick={() => navigate(`/lap/${lap.lap_id}`)}
                     >
                       <TableCell>
-                        <span className="font-medium text-white">Lap {lap.lap_number}</span>
+                        <span className="font-medium text-foreground">Lap {lap.lap_number}</span>
                       </TableCell>
                       <TableCell>
-                        <span className="font-mono text-white">
+                        <span className="font-mono text-foreground">
                           {lap.lap_time ? formatLapTime(lap.lap_time) : '--:--.---'}
                         </span>
                       </TableCell>
@@ -172,7 +172,7 @@ export function SessionDetailPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-muted-foreground">
                           {formatDateTime(lap.created_at)}
                         </span>
                       </TableCell>

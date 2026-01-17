@@ -33,8 +33,8 @@ export function SessionsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Sessions</h2>
-          <p className="text-gray-400">View and analyze your racing sessions</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Sessions</h2>
+          <p className="text-muted-foreground">View and analyze your racing sessions</p>
         </div>
         <Card>
           <LoadingState message="Loading sessions..." />
@@ -47,8 +47,8 @@ export function SessionsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Sessions</h2>
-          <p className="text-gray-400">View and analyze your racing sessions</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Sessions</h2>
+          <p className="text-muted-foreground">View and analyze your racing sessions</p>
         </div>
         <Card>
           <ErrorState error={error instanceof Error ? error : new Error('Failed to load sessions')} />
@@ -61,8 +61,8 @@ export function SessionsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Sessions</h2>
-          <p className="text-gray-400">View and analyze your racing sessions</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Sessions</h2>
+          <p className="text-muted-foreground">View and analyze your racing sessions</p>
         </div>
         <Card>
           <EmptyState message="No sessions found. Start racing to see your data here!" />
@@ -81,8 +81,8 @@ export function SessionsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Sessions</h2>
-          <p className="text-gray-400">View and analyze your racing sessions</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Sessions</h2>
+          <p className="text-muted-foreground">View and analyze your racing sessions</p>
         </div>
         <Badge variant="info">{sessions.length} Total Sessions</Badge>
       </div>
@@ -97,7 +97,7 @@ export function SessionsPage() {
             <input
               type="text"
               placeholder="Filter by track or car..."
-              className="w-full px-4 py-2 text-white placeholder-gray-500 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-4 py-2 text-foreground placeholder-muted-foreground bg-muted border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             />
@@ -121,20 +121,20 @@ export function SessionsPage() {
                   >
                     <TableCell>
                       <div>
-                        <div className="font-medium text-white">{session.track_name}</div>
+                        <div className="font-medium text-foreground">{session.track_name}</div>
                         {session.track_config_name && (
-                          <div className="text-sm text-gray-400">{session.track_config_name}</div>
+                          <div className="text-sm text-muted-foreground">{session.track_config_name}</div>
                         )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-white">{session.car_name}</div>
+                      <div className="text-foreground">{session.car_name}</div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="default">{session.lap_count} laps</Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         {formatDateTime(session.created_at)}
                       </div>
                     </TableCell>
@@ -146,7 +146,7 @@ export function SessionsPage() {
 
           {filteredSessions.length === 0 && filter && (
             <div className="py-8 text-center">
-              <p className="text-gray-400">No sessions match your filter</p>
+              <p className="text-muted-foreground">No sessions match your filter</p>
             </div>
           )}
         </CardContent>

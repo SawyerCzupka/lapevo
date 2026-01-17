@@ -24,8 +24,8 @@ export function DashboardPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Dashboard</h2>
-          <p className="text-gray-400">Loading your racing data...</p>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
+          <p className="text-muted-foreground">Loading your racing data...</p>
         </div>
         <Card>
           <LoadingState message="Loading dashboard..." />
@@ -38,7 +38,7 @@ export function DashboardPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">Dashboard</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
         </div>
         <Card>
           <ErrorState error={error instanceof Error ? error : new Error('Failed to load dashboard')} />
@@ -59,10 +59,10 @@ export function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">
             Welcome back{user?.display_name ? `, ${user.display_name}` : ''}
           </h2>
-          <p className="text-gray-400">Here's your racing overview</p>
+          <p className="text-muted-foreground">Here's your racing overview</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => navigate('/compare')}>
@@ -76,34 +76,34 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Total Sessions</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Sessions</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-white">{totalSessions}</p>
+            <p className="text-3xl font-bold text-foreground">{totalSessions}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Total Laps</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Laps</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-white">{totalLaps}</p>
+            <p className="text-3xl font-bold text-foreground">{totalLaps}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Tracks Driven</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Tracks Driven</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-white">{uniqueTracks}</p>
+            <p className="text-3xl font-bold text-foreground">{uniqueTracks}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Cars Used</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Cars Used</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-white">{uniqueCars}</p>
+            <p className="text-3xl font-bold text-foreground">{uniqueCars}</p>
           </CardContent>
         </Card>
       </div>
@@ -140,18 +140,18 @@ export function DashboardPage() {
                   >
                     <TableCell>
                       <div>
-                        <div className="font-medium text-white">{session.track_name}</div>
+                        <div className="font-medium text-foreground">{session.track_name}</div>
                         {session.track_config_name && (
-                          <div className="text-sm text-gray-400">{session.track_config_name}</div>
+                          <div className="text-sm text-muted-foreground">{session.track_config_name}</div>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-white">{session.car_name}</TableCell>
+                    <TableCell className="text-foreground">{session.car_name}</TableCell>
                     <TableCell>
                       <Badge variant="default">{session.lap_count}</Badge>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-muted-foreground">
                         {formatRelativeTime(session.created_at)}
                       </span>
                     </TableCell>

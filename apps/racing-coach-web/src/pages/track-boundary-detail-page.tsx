@@ -175,13 +175,13 @@ export function TrackBoundaryDetailPage() {
         <div>
           <button
             onClick={() => navigate('/tracks')}
-            className="text-sm text-gray-400 hover:text-white mb-2 flex items-center gap-1"
+            className="text-sm text-muted-foreground hover:text-foreground mb-2 flex items-center gap-1"
           >
             &larr; Back to Track Boundaries
           </button>
-          <h2 className="text-3xl font-bold tracking-tight text-white">{boundary.track_name}</h2>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">{boundary.track_name}</h2>
           {boundary.track_config_name && (
-            <p className="text-xl text-gray-400">{boundary.track_config_name}</p>
+            <p className="text-xl text-muted-foreground">{boundary.track_config_name}</p>
           )}
         </div>
         <div className="flex gap-4 items-center">
@@ -206,36 +206,36 @@ export function TrackBoundaryDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Track ID</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Track ID</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-semibold text-white">{boundary.track_id}</p>
+            <p className="text-xl font-semibold text-foreground">{boundary.track_id}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Left Boundary Frames</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Left Boundary Frames</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-semibold text-white">{boundary.source_left_frames}</p>
+            <p className="text-xl font-semibold text-foreground">{boundary.source_left_frames}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Right Boundary Frames
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-semibold text-white">{boundary.source_right_frames}</p>
+            <p className="text-xl font-semibold text-foreground">{boundary.source_right_frames}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-400">Created</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Created</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg font-semibold text-white">{formatDateTime(boundary.created_at)}</p>
+            <p className="text-lg font-semibold text-foreground">{formatDateTime(boundary.created_at)}</p>
           </CardContent>
         </Card>
       </div>

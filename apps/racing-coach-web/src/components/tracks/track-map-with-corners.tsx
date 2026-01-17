@@ -3,6 +3,7 @@ import Plot from 'react-plotly.js';
 import type { TrackBoundaryResponse, LapTelemetryResponse } from '@/api/generated/models';
 import type { CornerDraft } from '@/pages/corner-segment-editor-page';
 import { distanceToGps, generateCornerPolygon, gpsToDistance } from '@/lib/track-utils';
+import { plotLayout } from '@/lib/chart-colors';
 
 interface TrackMapWithCornersProps {
   boundary: TrackBoundaryResponse;
@@ -13,16 +14,16 @@ interface TrackMapWithCornersProps {
   onSelectCorner: (id: string | null) => void;
 }
 
-// Color palette for corners
+// Teal-based color palette for corners
 const CORNER_COLORS = [
-  '#3b82f6', // blue
-  '#10b981', // green
-  '#f59e0b', // amber
-  '#ef4444', // red
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#f97316', // orange
+  '#14b8a6', // teal-500
+  '#2dd4bf', // teal-400
+  '#5eead4', // teal-300
+  '#99f6e4', // teal-200
+  '#0d9488', // teal-600
+  '#0f766e', // teal-700
+  '#06b6d4', // cyan-500
+  '#22d3ee', // cyan-400
 ];
 
 export function TrackMapWithCorners({
@@ -302,12 +303,9 @@ export function TrackMapWithCorners({
     () => ({
       uirevision: 'preserve-zoom',
       height: 600,
-      paper_bgcolor: 'rgba(0,0,0,0)',
-      plot_bgcolor: 'rgba(17, 24, 39, 0.5)',
-      font: {
-        color: '#ffffff',
-        family: 'system-ui, -apple-system, sans-serif',
-      },
+      paper_bgcolor: plotLayout.paper_bgcolor,
+      plot_bgcolor: plotLayout.plot_bgcolor,
+      font: plotLayout.font,
       xaxis: {
         uirevision: 'preserve-zoom',
         showticklabels: false,
