@@ -58,6 +58,7 @@ async def upload_lap(
                 lap_number=lap_number,
                 lap_id=lap_id,
                 is_valid=is_valid,
+                lap_time=lap.lap_time,
             )
 
             # Add telemetry sequence

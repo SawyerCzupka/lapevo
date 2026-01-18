@@ -46,7 +46,7 @@ impl EventLike for RacingEvent {
 #[derive(Clone, Debug)]
 pub struct LapCompletePayload {
     pub lap_number: i32,
-    pub lap_time_ms: Option<u64>,
+    // pub lap_time_ms: Option<u64>,
     /// Lap time in seconds (from last_lap_time telemetry field).
     pub lap_time: Option<f64>,
     pub frame_count: usize,

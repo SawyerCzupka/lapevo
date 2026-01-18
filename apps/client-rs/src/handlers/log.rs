@@ -46,7 +46,7 @@ impl EventHandler<RacingEvent> for LogHandler {
 
         if count.is_multiple_of(self.log_frequency) {
             info!(
-                "Frame {}: Speed={:.1}, RPM={:.0}, Gear={}, Lap={}, DistPct={}, LapTime={}, Surface={}",
+                "Frame {}: Speed={:.1}, RPM={:.0}, Gear={}, Lap={}, DistPct={}, LapTime={}, Surface={}, LastLapTime={}",
                 count,
                 frame.speed,
                 frame.rpm,
@@ -54,7 +54,8 @@ impl EventHandler<RacingEvent> for LogHandler {
                 frame.lap_number,
                 frame.lap_distance_pct,
                 frame.current_lap_time,
-                frame.track_surface
+                frame.track_surface,
+                frame.last_lap_time
             );
         }
     }

@@ -33,6 +33,7 @@ struct LapHandlerState {
     frame_buffer: Vec<ApiTelemetryFrame>,
     /// Lap time from the last frame's last_lap_time field.
     last_lap_time: Option<f64>,
+    current_lap_time_cache: Option<f64>,
     last_distance_pct: f32,
 }
 
@@ -44,6 +45,7 @@ impl Default for LapHandlerState {
             valid: true,
             frame_buffer: Vec::with_capacity(FRAME_BUFFER_CAPACITY),
             last_lap_time: None,
+            current_lap_time_cache: None,
             last_distance_pct: 0.0,
         }
     }
@@ -118,10 +120,10 @@ impl EventHandler<RacingEvent> for LapHandler {
             state.valid = false;
         }
 
-        // Track lap time for completed laps
-        if frame.last_lap_time > 0.0 {
-            state.last_lap_time = Some(frame.last_lap_time as f64);
-        }
+        // // Track lap time for completed laps
+        // if frame.last_lap_time > 0.0 {
+        //     state.last_lap_time = Some(frame.last_lap_time as f64);
+        // }
 
         // Detect lap change
         if frame.lap_number != state.current_lap && state.current_lap >= 0 {
@@ -137,8 +139,12 @@ impl EventHandler<RacingEvent> for LapHandler {
             }
 
             info!(
-                "Lap {} complete after {} frames. Valid: {}, Time: {:?}",
-                state.current_lap, state.frame_count, state.valid, state.last_lap_time
+                "Lap {} complete after {} frames. Valid: {}, Time: {:?}, CurTime: {:?}",
+                state.current_lap,
+                state.frame_count,
+                state.valid,
+                state.last_lap_time,
+                state.current_lap_time_cache
             );
 
             // TODO: Ensure this is necessary, because this seems weird.
@@ -156,15 +162,14 @@ impl EventHandler<RacingEvent> for LapHandler {
                 lap_id,
                 state.valid,
                 &frames,
-                state.last_lap_time,
+                state.current_lap_time_cache,
             )
             .await;
 
             // Publish LapComplete event for downstream handlers
             ctx.publish(RacingEvent::LapComplete(LapCompletePayload {
                 lap_number: state.current_lap,
-                lap_time_ms: state.last_lap_time.map(|t| (t * 1000.0) as u64),
-                lap_time: state.last_lap_time,
+                lap_time: state.current_lap_time_cache,
                 frame_count: state.frame_count,
                 frames,
                 lap_id,
@@ -179,6 +184,9 @@ impl EventHandler<RacingEvent> for LapHandler {
 
         state.current_lap = frame.lap_number;
         state.last_distance_pct = frame.lap_distance_pct;
+        if frame.current_lap_time > 0.0 {
+            state.current_lap_time_cache = Some(frame.current_lap_time as f64);
+        }
         debug!("Lap {} frame {}", state.current_lap, state.frame_count);
     }
 }
