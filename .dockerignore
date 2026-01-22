@@ -1,0 +1,41 @@
+# Python virtual environments
+**/.venv
+**/venv
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Testing
+**/.pytest_cache
+**/.coverage
+**/htmlcov
+**/*.egg-info
+
+# IDE
+**/.idea
+**/.vscode
+**/*.swp
+**/*.swo
+**/*~
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Environment files
+**/.env
+**/.env.local
+**/*.log
+
+# Node modules (for web app)
+**/node_modules
+
+# Build artifacts
+**/dist
+**/build
