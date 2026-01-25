@@ -1,5 +1,10 @@
 import { useGetSessionsList } from '@/api/generated/sessions/sessions';
+import {
+  DeleteSessionDialog,
+  type SessionToDelete,
+} from '@/components/delete-session-dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/loading-states';
 import {
@@ -11,6 +16,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatDateTime } from '@/lib/format';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -18,9 +24,20 @@ export function SessionsPage() {
   const navigate = useNavigate();
   const { data: response, isLoading, error } = useGetSessionsList();
   const [filter, setFilter] = useState('');
+  const [sessionToDelete, setSessionToDelete] = useState<SessionToDelete | null>(null);
 
   // Extract sessions from response
   const sessions = response?.sessions;
+
+  const handleDeleteClick = (
+    e: React.MouseEvent,
+    sessionId: string,
+    trackName: string,
+    carName: string
+  ) => {
+    e.stopPropagation(); // Prevent row click navigation
+    setSessionToDelete({ id: sessionId, trackName, carName });
+  };
 
 
 
@@ -111,6 +128,7 @@ export function SessionsPage() {
                   <TableHead>Car</TableHead>
                   <TableHead>Laps</TableHead>
                   <TableHead>Date</TableHead>
+                  <TableHead className="w-[80px]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,6 +156,23 @@ export function SessionsPage() {
                         {formatDateTime(session.created_at)}
                       </div>
                     </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        className="text-muted-foreground hover:text-destructive"
+                        onClick={(e) =>
+                          handleDeleteClick(
+                            e,
+                            session.session_id,
+                            session.track_name,
+                            session.car_name
+                          )
+                        }
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -151,6 +186,12 @@ export function SessionsPage() {
           )}
         </CardContent>
       </Card>
+
+      <DeleteSessionDialog
+        session={sessionToDelete}
+        open={!!sessionToDelete}
+        onOpenChange={(open) => !open && setSessionToDelete(null)}
+      />
     </div>
   );
 }

@@ -8,4 +8,5 @@
 
 export type UploadLapParams = {
   lap_id?: string | null;
+  is_valid?: boolean;
 };

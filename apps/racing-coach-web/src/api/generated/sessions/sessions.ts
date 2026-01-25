@@ -5,15 +5,18 @@
  * API server for racing telemetry data collection and analysis
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
@@ -353,6 +356,94 @@ export function useGetSessionDetail<
   return query;
 }
 
+/**
+ * Delete a track session and all associated data.
+
+This permanently deletes the session along with all its laps,
+telemetry frames, and metrics. This action cannot be undone.
+ * @summary Delete Session
+ */
+export const deleteSession = (
+  sessionId: string,
+  options?: SecondParameter<typeof customInstance>,
+) => {
+  return customInstance<void>(
+    { url: `/api/v1/sessions/${sessionId}`, method: "DELETE" },
+    options,
+  );
+};
+
+export const getDeleteSessionMutationOptions = <
+  TError = ErrorType<HTTPValidationError>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteSession>>,
+    TError,
+    { sessionId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteSession>>,
+  TError,
+  { sessionId: string },
+  TContext
+> => {
+  const mutationKey = ["deleteSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteSession>>,
+    { sessionId: string }
+  > = (props) => {
+    const { sessionId } = props ?? {};
+
+    return deleteSession(sessionId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteSession>>
+>;
+
+export type DeleteSessionMutationError = ErrorType<HTTPValidationError>;
+
+/**
+ * @summary Delete Session
+ */
+export const useDeleteSession = <
+  TError = ErrorType<HTTPValidationError>,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteSession>>,
+      TError,
+      { sessionId: string },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteSession>>,
+  TError,
+  { sessionId: string },
+  TContext
+> => {
+  const mutationOptions = getDeleteSessionMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
 /**
  * Get detailed information about a specific lap.
  * @summary Get Lap

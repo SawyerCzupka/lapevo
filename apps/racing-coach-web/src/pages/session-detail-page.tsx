@@ -1,7 +1,9 @@
 import type { LapSummary } from '@/api/generated/models';
 import { useGetSessionDetail } from '@/api/generated/sessions/sessions';
+import { DeleteSessionDialog } from '@/components/delete-session-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Breadcrumbs } from '@/components/ui/breadcrumbs';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/loading-states';
 import {
@@ -13,23 +15,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatDateTime, formatLapTime } from '@/lib/format';
+import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 export function SessionDetailPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const navigate = useNavigate();
-  const { data: response, isLoading, error } = useGetSessionDetail(
-    sessionId || ""
-  );
+  const { data: response, isLoading, error } = useGetSessionDetail(sessionId || '');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // Check if response is successful (status 200)
-  // const session: SessionDetailResponse | undefined =
-  //   response?.status === 200 ? response.data : undefined;
-
-  const session = response
-
-  console.log(response)
-  console.log(session)
+  const session = response;
 
   if (isLoading) {
     return (
@@ -95,7 +91,18 @@ export function SessionDetailPage() {
             <p className="text-xl text-muted-foreground">{session.track_config_name}</p>
           )}
         </div>
-        <Badge variant="info">{laps.length} Laps</Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="info">{laps.length} Laps</Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-muted-foreground hover:text-destructive hover:border-destructive"
+            onClick={() => setShowDeleteDialog(true)}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Session
+          </Button>
+        </div>
       </div>
 
       {/* Session Info */}
@@ -184,6 +191,18 @@ export function SessionDetailPage() {
           )}
         </CardContent>
       </Card>
+
+      <DeleteSessionDialog
+        session={{
+          id: session.session_id,
+          trackName: session.track_name,
+          carName: session.car_name,
+          lapCount: laps.length,
+        }}
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onDeleted={() => navigate('/sessions')}
+      />
     </div>
   );
 }
