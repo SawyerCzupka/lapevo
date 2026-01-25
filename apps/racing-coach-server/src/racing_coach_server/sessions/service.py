@@ -119,6 +119,32 @@ class SessionService:
 
         return session
 
+    async def delete_session(self, session_id: UUID) -> bool:
+        """
+        Delete a track session and all associated data.
+
+        Cascade deletes are configured in the model, so this will also delete:
+        - All Lap records
+        - All Telemetry frames
+        - All LapMetricsDB records
+        - All BrakingMetricsDB and CornerMetricsDB records
+
+        Args:
+            session_id: The ID of the session to delete
+
+        Returns:
+            bool: True if session was deleted, False if not found
+        """
+        session = await self.get_session_by_id(session_id)
+        if session is None:
+            logger.debug(f"Cannot delete session {session_id}: not found")
+            return False
+
+        await self.db.delete(session)
+        await self.db.flush()
+        logger.info(f"Deleted session {session_id} and all associated data")
+        return True
+
     # === Lap Operations ===
 
     async def get_laps_for_session(self, session_id: UUID) -> list[Lap]:

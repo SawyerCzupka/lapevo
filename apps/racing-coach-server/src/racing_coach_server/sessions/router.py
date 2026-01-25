@@ -3,9 +3,10 @@
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 
-from racing_coach_server.dependencies import SessionServiceDep, TelemetryServiceDep
+from racing_coach_server.database.engine import transactional_session
+from racing_coach_server.dependencies import AsyncSessionDep, SessionServiceDep, TelemetryServiceDep
 from racing_coach_server.sessions.schemas import (
     LapDetailResponse,
     LapSummary,
@@ -114,6 +115,39 @@ async def get_session(
         raise
     except Exception as e:
         logger.error(f"Error getting session {session_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}") from e
+
+
+@router.delete(
+    "/{session_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    operation_id="deleteSession",
+    tags=["sessions"],
+)
+async def delete_session(
+    session_id: UUID,
+    db: AsyncSessionDep,
+    session_service: SessionServiceDep,
+) -> None:
+    """
+    Delete a track session and all associated data.
+
+    This permanently deletes the session along with all its laps,
+    telemetry frames, and metrics. This action cannot be undone.
+    """
+    try:
+        async with transactional_session(db):
+            deleted = await session_service.delete_session(session_id)
+
+            if not deleted:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Session {session_id} not found",
+                )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting session {session_id}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Server error: {str(e)}") from e
 
 

@@ -2,11 +2,10 @@
 
 from datetime import datetime, timedelta, timezone
 from typing import Any
-from uuid import uuid4
 
 from polyfactory.factories.pydantic_factory import ModelFactory
 from polyfactory.factories.sqlalchemy_factory import SQLAlchemyFactory
-from polyfactory.fields import Ignore, Use
+from polyfactory.fields import Use
 from racing_coach_core.schemas.telemetry import (
     LapTelemetry,
     SessionFrame,
@@ -51,7 +50,6 @@ class TrackSessionFactory(SQLAlchemyFactory[TrackSession]):
 
     __set_relationships__ = False
 
-    id = Use(uuid4)
     track_id = Use(lambda: __import__("random").randint(1, 500))
     track_name = Use(lambda: __import__("faker").Faker().company())
     track_config_name = Use(lambda: __import__("faker").Faker().word())
@@ -61,10 +59,6 @@ class TrackSessionFactory(SQLAlchemyFactory[TrackSession]):
     car_class_id = Use(lambda: __import__("random").randint(1, 50))
     series_id = Use(lambda: __import__("random").randint(1, 100))
     session_type = Use(lambda: __import__("faker").Faker().word())
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
-    updated_at = Ignore()
 
     @classmethod
     def build(cls, **kwargs: Any) -> TrackSession:
@@ -81,15 +75,9 @@ class LapFactory(SQLAlchemyFactory[Lap]):
 
     __set_relationships__ = False
 
-    id = Use(uuid4)
-    track_session_id = Use(uuid4)
     lap_number = Use(lambda: __import__("random").randint(1, 50))
     lap_time = Use(lambda: __import__("random").uniform(60.0, 180.0))
     is_valid = Use(lambda: True)
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
-    updated_at = Ignore()
 
     @classmethod
     def build(cls, **kwargs: Any) -> Lap:
@@ -106,9 +94,6 @@ class TelemetryDBFactory(SQLAlchemyFactory[Telemetry]):
 
     __set_relationships__ = False
 
-    id = Use(uuid4)
-    track_session_id = Use(uuid4)
-    lap_id = Use(uuid4)
     timestamp = Use(lambda: datetime.now(timezone.utc))
     session_time = Use(lambda: __import__("random").uniform(0.0, 3600.0))
     lap_number = Use(lambda: __import__("random").randint(1, 50))
@@ -195,20 +180,12 @@ class LapMetricsDBFactory(SQLAlchemyFactory[LapMetricsDB]):
 
     __set_relationships__ = False
 
-    lap_id = Use(uuid4)
     lap_time = Use(lambda: __import__("random").uniform(60.0, 180.0))
     total_corners = Use(lambda: __import__("random").randint(3, 15))
     total_braking_zones = Use(lambda: __import__("random").randint(3, 15))
     average_corner_speed = Use(lambda: __import__("random").uniform(25.0, 45.0))
     max_speed = Use(lambda: __import__("random").uniform(70.0, 100.0))
     min_speed = Use(lambda: __import__("random").uniform(15.0, 30.0))
-
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
-    updated_at = Ignore()
 
     @classmethod
     def build(cls, **kwargs: Any) -> LapMetricsDB:
@@ -225,7 +202,6 @@ class BrakingMetricsDBFactory(SQLAlchemyFactory[BrakingMetricsDB]):
 
     __set_relationships__ = False
 
-    lap_metrics_id = Use(uuid4)
     zone_number = Use(lambda: __import__("random").randint(1, 10))
     braking_point_distance = Use(lambda: __import__("random").uniform(0.0, 1.0))
     braking_point_speed = Use(lambda: __import__("random").uniform(30.0, 80.0))
@@ -240,16 +216,12 @@ class BrakingMetricsDBFactory(SQLAlchemyFactory[BrakingMetricsDB]):
     trail_brake_distance = Use(lambda: __import__("random").uniform(0.0, 0.05))
     trail_brake_percentage = Use(lambda: __import__("random").uniform(0.0, 0.8))
 
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
-
 
 class CornerMetricsDBFactory(SQLAlchemyFactory[CornerMetricsDB]):
     """Factory for creating CornerMetricsDB database model instances."""
 
     __set_relationships__ = False
 
-    lap_metrics_id = Use(uuid4)
     corner_number = Use(lambda: __import__("random").randint(1, 12))
     turn_in_distance = Use(lambda: __import__("random").uniform(0.0, 1.0))
     apex_distance = Use(lambda: __import__("random").uniform(0.0, 1.0))
@@ -265,9 +237,6 @@ class CornerMetricsDBFactory(SQLAlchemyFactory[CornerMetricsDB]):
     max_steering_angle = Use(lambda: __import__("random").uniform(0.2, 1.5))
     speed_loss = Use(lambda: __import__("random").uniform(5.0, 30.0))
     speed_gain = Use(lambda: __import__("random").uniform(5.0, 40.0))
-
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
 
 
 # ============================================================================
@@ -285,13 +254,6 @@ class UserFactory(SQLAlchemyFactory[User]):
     display_name = Use(lambda: __import__("faker").Faker().name())
     is_active = Use(lambda: True)
 
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
-    updated_at = Ignore()
-
     @classmethod
     def build(cls, **kwargs: Any) -> User:
         """Build with post-construction timestamp assignment."""
@@ -307,16 +269,8 @@ class UserSessionFactory(SQLAlchemyFactory[UserSession]):
 
     __set_relationships__ = False
 
-    user_id = Use(uuid4)
     token_hash = Use(lambda: hash_token("test_session_token"))
     expires_at = Use(lambda: datetime.now(timezone.utc) + timedelta(days=30))
-
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
-    last_active_at = Ignore()
 
     @classmethod
     def build(cls, **kwargs: Any) -> UserSession:
@@ -333,15 +287,8 @@ class DeviceTokenFactory(SQLAlchemyFactory[DeviceToken]):
 
     __set_relationships__ = False
 
-    user_id = Use(uuid4)
     token_hash = Use(lambda: hash_token("test_device_token"))
     device_name = Use(lambda: __import__("faker").Faker().word())
-
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
 
     @classmethod
     def build(cls, **kwargs: Any) -> DeviceToken:
@@ -361,12 +308,6 @@ class DeviceAuthorizationFactory(SQLAlchemyFactory[DeviceAuthorization]):
     device_name = Use(lambda: __import__("faker").Faker().word())
     expires_at = Use(lambda: datetime.now(timezone.utc) + timedelta(minutes=15))
     status = Use(lambda: "pending")
-
-    # id is init=False with default_factory, so we ignore it
-    id = Ignore()
-
-    # Timestamps are init=False (server-defaulted), ignore them in constructor
-    created_at = Ignore()
 
     @classmethod
     def build(cls, **kwargs: Any) -> DeviceAuthorization:
