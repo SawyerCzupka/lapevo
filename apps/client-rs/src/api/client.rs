@@ -7,7 +7,7 @@ use reqwest::Client;
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use tokio::sync::RwLock;
-use tracing::{debug, instrument, warn};
+use tracing::{debug, info, instrument, warn};
 use uuid::Uuid;
 
 use crate::api::auth::{
@@ -19,7 +19,7 @@ use crate::api::error::{ApiError, ApiResult};
 use crate::api::models::{
     CornerSegmentListResponse, LapMetrics, LapTelemetry, LapUploadRequest, LapUploadResponse,
     MetricsUploadRequest, MetricsUploadResponse, SessionFrame, TrackBoundaryListResponse,
-    TrackBoundaryResponse,
+    TrackBoundaryResponse, UserResponse,
 };
 
 const DEVICE_TOKEN_HEADER: &str = "X-Device-Token";
@@ -440,6 +440,66 @@ impl ServerAPIClient {
             .await?;
 
         self.handle_response(response).await
+    }
+
+    /// Get the current authenticated user's profile.
+    pub async fn get_me(&self) -> ApiResult<UserResponse> {
+        let url = format!("{}/api/v1/auth/me", self.base_url);
+
+        let response = self
+            .authenticated_request(reqwest::Method::GET, &url)
+            .await
+            .send()
+            .await?;
+
+        self.handle_response(response).await
+    }
+
+    /// Check if the server is reachable by hitting the health endpoint.
+    ///
+    /// Returns `true` if the server responds (any status), `false` on connection error.
+    pub async fn check_server_reachable(&self) -> bool {
+        let url = format!("{}/api/v1/health", self.base_url);
+        self.client.get(&url).send().await.is_ok()
+    }
+
+    /// Validate stored credentials against the server.
+    ///
+    /// 1. Checks server reachability — if unreachable, logs a warning and returns `Ok(())`.
+    /// 2. Calls `/auth/me` — if the token is invalid (401), deletes stored credentials
+    ///    and triggers re-authentication via the device flow.
+    ///
+    /// # Arguments
+    ///
+    /// * `device_name` - Device name to use if re-authentication is needed
+    pub async fn validate_credentials(&self, device_name: &str) -> ApiResult<()> {
+        if !self.check_server_reachable().await {
+            warn!(
+                "Server `{}` is not reachable — skipping credential validation",
+                self.base_url
+            );
+            return Ok(());
+        }
+
+        match self.get_me().await {
+            Ok(user) => {
+                info!(
+                    "Authenticated as {} ({})",
+                    user.display_name.as_deref().unwrap_or("unknown"),
+                    user.email
+                );
+                Ok(())
+            }
+            Err(ApiError::Unauthorized) => {
+                warn!("Stored credentials are invalid — re-authenticating");
+                self.logout().await?;
+                self.authenticate(device_name).await
+            }
+            Err(e) => {
+                warn!("Failed to validate credentials: {e}");
+                Ok(())
+            }
+        }
     }
 
     /// Handle HTTP response, converting error status codes to [`ApiError`].

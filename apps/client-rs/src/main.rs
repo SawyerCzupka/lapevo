@@ -26,7 +26,12 @@ async fn main() {
 
     let client = api::ServerAPIClient::new(String::from("http://localhost:8000")).unwrap();
 
-    if !client.load_stored_token().await.unwrap() {
+    if client.load_stored_token().await.unwrap() {
+        client
+            .validate_credentials("sawyer_laptop")
+            .await
+            .unwrap();
+    } else {
         client.authenticate("sawyer_laptop").await.unwrap();
     }
 

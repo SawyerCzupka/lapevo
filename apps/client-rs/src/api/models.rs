@@ -310,6 +310,21 @@ pub struct CornerSegmentListResponse {
 }
 
 // ============================================================================
+// Auth Types
+// ============================================================================
+
+/// Response from the /auth/me endpoint.
+#[derive(Debug, Clone, Deserialize)]
+pub struct UserResponse {
+    pub user_id: String,
+    pub email: String,
+    pub display_name: Option<String>,
+    pub email_verified: bool,
+    pub is_admin: bool,
+    pub created_at: DateTime<Utc>,
+}
+
+// ============================================================================
 // Request Types
 // ============================================================================
 

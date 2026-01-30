@@ -52,9 +52,14 @@ pub async fn run_events() {
         ServerAPIClient::new("http://localhost:8000").expect("Failed to create API client"),
     );
 
-    // Load stored auth token (continue even if not authenticated)
+    // Load stored auth token and validate against server
     match client.load_stored_token().await {
-        Ok(true) => info!("Loaded stored authentication token"),
+        Ok(true) => {
+            info!("Loaded stored authentication token — validating...");
+            if let Err(e) = client.validate_credentials("racing-client").await {
+                error!("Credential validation failed: {}", e);
+            }
+        }
         Ok(false) => info!("No stored credentials found - uploads will require authentication"),
         Err(e) => error!("Failed to load stored credentials: {}", e),
     }
