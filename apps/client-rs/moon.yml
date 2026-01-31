@@ -1,30 +1,30 @@
-$schema: '../../.moon/cache/schemas/project.json'
+$schema: "../../.moon/cache/schemas/project.json"
 
-type: 'application'
-language: 'rust'
+type: "application"
+language: "rust"
 
 tags:
-  - 'rust'
-  - 'client'
+  - "rust"
+  - "client"
 
 dependsOn:
-  - 'pitwall'
+  - "pitwall"
 
 fileGroups:
   sources:
-    - 'src/**/*.rs'
+    - "src/**/*.rs"
 
 tasks:
   run:
     # No dependencies since cargo run manages building automatically.
-    command: 'cargo run'
+    command: "cargo run"
     inputs:
-      - 'src/**/*.rs'
-      - 'Cargo.toml'
+      - "src/**/*.rs"
+      - "Cargo.toml"
     options:
       persistent: true
       cache: false
-      outputStyle: stream
+      # outputStyle: stream
       runInCI: false
 
 # Inherits build, test, check, clippy, fmt from .moon/tasks/rust.yml

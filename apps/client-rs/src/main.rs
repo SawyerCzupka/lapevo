@@ -1,12 +1,25 @@
-use client_rs::run_events;
+use clap::Parser;
+use client_rs::run_replay_mode;
 use tracing::info;
 use tracing_subscriber::{EnvFilter, fmt};
 
-use client_rs::api;
+#[derive(Parser)]
+#[command(name = "racing-coach-client", about = "Racing Coach iRacing client")]
+struct Cli {
+    /// IBT file path for replay mode
+    #[arg(
+        long,
+        default_value = "../../sample_data/ligierjsp320_bathurst 2025-11-17 18-15-16.ibt"
+    )]
+    ibt_path: String,
+
+    /// Playback speed multiplier
+    #[arg(long, default_value_t = 5.0)]
+    speed: f64,
+}
 
 #[tokio::main]
 async fn main() {
-    // Set log level by RUST_LOG if set or default to `info`
     let filter = EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("info"));
 
     fmt()
@@ -19,39 +32,7 @@ async fn main() {
 
     info!("Racing Coach Client v{}", env!("CARGO_PKG_VERSION"));
 
-    // let config = Config::new("http://localhost:8000");
-    // client_rs::run(&config);
+    let cli = Cli::parse();
 
-    println!("Hello World!");
-
-    let client = api::ServerAPIClient::new(String::from("http://localhost:8000")).unwrap();
-
-    if client.load_stored_token().await.unwrap() {
-        client
-            .validate_credentials("sawyer_laptop")
-            .await
-            .unwrap();
-    } else {
-        client.authenticate("sawyer_laptop").await.unwrap();
-    }
-
-    // let boundaries = client.fetch_track_boundaries().await.unwrap();
-
-    // let my_boundary = client
-    //     .fetch_track_boundary(boundaries.boundaries[0].id)
-    //     .await
-    //     .unwrap();
-
-    // let debug_str = format!(
-    //     "[Boundary] Track: {}, # points: {}",
-    //     my_boundary.track_name, my_boundary.source_left_frames
-    // );
-    // println!("{debug_str}");
-
-    run_events().await;
-
-    // read_telemetry().await;
-
-    // tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-    println!("Main Done.");
+    run_replay_mode(&cli.ibt_path, cli.speed).await;
 }

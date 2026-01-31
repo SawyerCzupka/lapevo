@@ -12,6 +12,8 @@ use std::sync::Arc;
 
 use crate::pos_service::PositionState;
 pub use config::Config;
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::terminal;
 use eventbus::{EventBus, HandlerRegistry};
 use futures::StreamExt;
 use handlers::{LapHandler, LogHandler, MetricsHandler};
@@ -20,20 +22,74 @@ pub use pitwall_ext::AcceleratedReplayConnection;
 use pos_service::PositionService;
 use telem::{TelemetryFrame, extract_session_frame};
 use tokio::sync::watch;
-use tokio::time::sleep;
 use tracing::{error, info};
 
 use crate::api::ServerAPIClient;
 use crate::events::RacingEvent;
 
-pub async fn run_events() {
+/// Interactive replay mode: idle loop waiting for keypresses.
+/// `s` starts a session, `q` quits.
+pub async fn run_replay_mode(ibt_path: &str, speed: f64) {
+    // Create and authenticate API client once (reused across sessions)
+    let client = Arc::new(
+        ServerAPIClient::new("http://localhost:8000").expect("Failed to create API client"),
+    );
+
+    match client.load_stored_token().await {
+        Ok(true) => {
+            info!("Loaded stored authentication token — validating...");
+            if let Err(e) = client.validate_credentials("racing-client").await {
+                error!("Credential validation failed: {}", e);
+            }
+        }
+        Ok(false) => info!("No stored credentials found - uploads will require authentication"),
+        Err(e) => error!("Failed to load stored credentials: {}", e),
+    }
+
+    // Enable raw mode for key input
+    terminal::enable_raw_mode().expect("Failed to enable raw mode");
+
+    loop {
+        println!("\r\n[IDLE] Press 's' to start a session, 'q' to quit.\r");
+
+        // Block on keypress (in a blocking thread to not stall tokio)
+        let key = tokio::task::spawn_blocking(|| loop {
+            if let Ok(Event::Key(KeyEvent {
+                code,
+                kind: KeyEventKind::Press,
+                ..
+            })) = event::read()
+            {
+                return code;
+            }
+        })
+        .await
+        .expect("Key reader task panicked");
+
+        match key {
+            KeyCode::Char('s') => {
+                println!("\r\n[STARTING SESSION]\r");
+                run_single_session(&client, ibt_path, speed).await;
+                println!("\r\n[SESSION COMPLETE]\r");
+            }
+            KeyCode::Char('q') => {
+                println!("\r\n[EXITING]\r");
+                break;
+            }
+            _ => {}
+        }
+    }
+
+    terminal::disable_raw_mode().expect("Failed to disable raw mode");
+}
+
+/// Runs a single replay session end-to-end: opens connection, registers handlers,
+/// plays back telemetry, then shuts down cleanly.
+pub async fn run_single_session(client: &Arc<ServerAPIClient>, ibt_path: &str, speed: f64) {
     // Open IBT replay connection
-    let connection = AcceleratedReplayConnection::open(
-        "../../sample_data/ligierjsp320_bathurst 2025-11-17 18-15-16.ibt",
-        10f64,
-    )
-    .await
-    .expect("Failed to open replay file");
+    let connection = AcceleratedReplayConnection::open(ibt_path, speed)
+        .await
+        .expect("Failed to open replay file");
 
     // Extract session info from replay file
     let session_info = connection
@@ -46,23 +102,6 @@ pub async fn run_events() {
         "Session: {} - {} ({:?})",
         session.track_name, session.car_name, session.session_type
     );
-
-    // Create API client
-    let client = Arc::new(
-        ServerAPIClient::new("http://localhost:8000").expect("Failed to create API client"),
-    );
-
-    // Load stored auth token and validate against server
-    match client.load_stored_token().await {
-        Ok(true) => {
-            info!("Loaded stored authentication token — validating...");
-            if let Err(e) = client.validate_credentials("racing-client").await {
-                error!("Credential validation failed: {}", e);
-            }
-        }
-        Ok(false) => info!("No stored credentials found - uploads will require authentication"),
-        Err(e) => error!("Failed to load stored credentials: {}", e),
-    }
 
     let bus = EventBus::new(10000);
 
@@ -87,7 +126,7 @@ pub async fn run_events() {
 
     // Run telemetry collection (publisher) using the existing connection
     let bus_clone = bus.clone();
-    tokio::spawn(async move {
+    let publisher = tokio::spawn(async move {
         let mut stream = connection.subscribe::<TelemetryFrame>(UpdateRate::Max(60));
         let mut published_count: u64 = 0;
 
@@ -116,9 +155,10 @@ pub async fn run_events() {
         );
     });
 
-    sleep(std::time::Duration::from_secs(60)).await;
+    // Await publisher completion (replay EOF) instead of sleeping
+    let _ = publisher.await;
 
-    println!("Shutting down...");
+    info!("Shutting down session...");
 
     // Signal shutdown
     registry.shutdown();
@@ -127,9 +167,4 @@ pub async fn run_events() {
     for handle in handles {
         let _ = handle.await;
     }
-}
-
-/// Main entry point for the library logic.
-pub fn run(config: &Config) {
-    println!("Server: {}", config.server_url);
 }
