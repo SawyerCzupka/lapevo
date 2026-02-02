@@ -5,7 +5,7 @@
 			"name": "Racing Coach Client"
 		},
 		{
-			"path": "apps/client-rs",
+			"path": "apps/lapevo-client",
 			"name": "Racing Coach Client (Rust)"
 		},
 		{

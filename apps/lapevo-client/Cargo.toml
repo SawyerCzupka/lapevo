@@ -1,0 +1,26 @@
+[package]
+name = "lapevo-client"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "lapevo_client"
+
+[dependencies]
+async-trait = "0.1"
+lapevo-eventbus = { path = "../../libs/lapevo-eventbus" }
+lapevo-sdk = { path = "../../libs/lapevo-sdk" }
+futures = "0.3.31"
+pitwall = { path = "../../libs/pitwall" }
+tokio = { version = "1.48.0", features = ["full"] }
+tokio-stream = "0.1"
+tokio-util = "0.7"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.22", features = ["env-filter", "fmt"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+thiserror = "2.0"
+clap = { version = "4", features = ["derive"] }
+crossterm = "0.28"
