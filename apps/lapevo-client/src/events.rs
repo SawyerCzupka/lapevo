@@ -3,7 +3,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 use lapevo_sdk::{SessionFrame, TelemetryFrame as ApiTelemetryFrame};
-use crate::telem::TelemetryFrame;
+use lapevo_telemetry::TelemetryFrame;
 use lapevo_eventbus::EventLike;
 
 /// Discriminant enum for channel routing (no payload, just identifies event kind).

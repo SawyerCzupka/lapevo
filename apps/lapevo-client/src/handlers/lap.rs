@@ -9,6 +9,7 @@ use lapevo_sdk::{
     LapTelemetry, ServerAPIClient, SessionFrame, TelemetryFrame as ApiTelemetryFrame,
 };
 use crate::events::{LapCompletePayload, RacingEvent, RacingEventKind};
+use crate::telem::to_api_frame;
 use lapevo_eventbus::{EventHandler, HandlerContext};
 
 const FRAME_BUFFER_CAPACITY: usize = 4000;
@@ -111,12 +112,12 @@ impl EventHandler<RacingEvent> for LapHandler {
         let mut state = self.state.lock().await;
         state.frame_count += 1;
 
-        let api_frame: ApiTelemetryFrame = frame.as_ref().into();
+        let api_frame: ApiTelemetryFrame = to_api_frame(frame.as_ref());
         state.frame_buffer.push(api_frame);
 
         // Track validity (on track surface = 3)
         // More performant to add this check for each new frame to avoid scanning the entire vector later
-        if state.valid && frame.track_surface != 3 {
+        if state.valid && !frame.on_track {
             state.valid = false;
         }
 

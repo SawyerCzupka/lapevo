@@ -2,19 +2,19 @@
 	"folders": [
 		{
 			"path": "apps/racing-coach-client",
-			"name": "Racing Coach Client"
+			"name": "Client (Python)"
 		},
 		{
 			"path": "apps/lapevo-client",
-			"name": "Racing Coach Client (Rust)"
+			"name": "Client (Rust)"
 		},
 		{
 			"path": "apps/racing-coach-server",
-			"name": "Racing Coach Server"
+			"name": "Server (FastAPI)"
 		},
 		{
 			"path": "apps/racing-coach-web",
-			"name": "Racing Coach Web"
+			"name": "Web Dashboard"
 		},
 		{
 			"path": "apps/lapevo-marketing",
@@ -22,11 +22,11 @@
 		},
 		{
 			"path": "libs/racing-coach-core",
-			"name": "Racing Coach Core Library"
+			"name": "Core Library (Py)"
 		},
 		{
 			"path": ".",
-			"name": "Racing Coach Workspace"
+			"name": "Workspace Root"
 		}
 	],
 	"settings": {

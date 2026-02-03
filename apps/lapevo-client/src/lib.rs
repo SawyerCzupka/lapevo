@@ -1,7 +1,6 @@
 pub mod algs;
 pub mod events;
 pub mod handlers;
-pub mod pitwall_ext;
 pub mod telem;
 
 mod config;
@@ -13,18 +12,17 @@ use crate::pos_service::PositionState;
 pub use config::Config;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::terminal;
-use lapevo_eventbus::{EventBus, HandlerRegistry};
-use futures::StreamExt;
 use handlers::{LapHandler, LogHandler, MetricsHandler};
-use pitwall::UpdateRate;
-pub use pitwall_ext::AcceleratedReplayConnection;
+use lapevo_eventbus::{EventBus, HandlerRegistry};
+use lapevo_iracing::IbtPlayback;
+use lapevo_telemetry::TelemetryStream;
 use pos_service::PositionService;
-use telem::{TelemetryFrame, extract_session_frame};
+use telem::extract_session_frame;
 use tokio::sync::watch;
 use tracing::{error, info};
 
-use lapevo_sdk::ServerAPIClient;
 use crate::events::RacingEvent;
+use lapevo_sdk::ServerAPIClient;
 
 /// Interactive replay mode: idle loop waiting for keypresses.
 /// `s` starts a session, `q` quits.
@@ -52,14 +50,16 @@ pub async fn run_replay_mode(ibt_path: &str, speed: f64) {
         println!("\r\n[IDLE] Press 's' to start a session, 'q' to quit.\r");
 
         // Block on keypress (in a blocking thread to not stall tokio)
-        let key = tokio::task::spawn_blocking(|| loop {
-            if let Ok(Event::Key(KeyEvent {
-                code,
-                kind: KeyEventKind::Press,
-                ..
-            })) = event::read()
-            {
-                return code;
+        let key = tokio::task::spawn_blocking(|| {
+            loop {
+                if let Ok(Event::Key(KeyEvent {
+                    code,
+                    kind: KeyEventKind::Press,
+                    ..
+                })) = event::read()
+                {
+                    return code;
+                }
             }
         })
         .await
@@ -84,23 +84,19 @@ pub async fn run_replay_mode(ibt_path: &str, speed: f64) {
     terminal::disable_raw_mode().expect("Failed to disable raw mode");
 }
 
-/// Runs a single replay session end-to-end: opens connection, registers handlers,
+/// Runs a single replay session end-to-end: opens IBT playback, registers handlers,
 /// plays back telemetry, then shuts down cleanly.
 pub async fn run_single_session(client: &Arc<ServerAPIClient>, ibt_path: &str, speed: f64) {
-    // Open IBT replay connection
-    let mut connection = AcceleratedReplayConnection::open(ibt_path, speed)
-        .await
-        .expect("Failed to open replay file");
+    // Open IBT playback stream
+    let (mut stream, _controls) =
+        IbtPlayback::open(ibt_path, speed).expect("Failed to open IBT file for playback");
 
-    // Extract session info from replay file
-    let session_info = connection
-        .current_session()
-        .expect("No session info in replay");
-    let session =
-        Arc::new(extract_session_frame(&session_info).expect("Failed to extract session frame"));
+    // Extract session info
+    let session_info = stream.session();
+    let session = Arc::new(extract_session_frame(session_info));
 
     info!(
-        "Session: {} - {} ({:?})",
+        "Session: {} - {} ({})",
         session.track_name, session.car_name, session.session_type
     );
 
@@ -125,16 +121,12 @@ pub async fn run_single_session(client: &Arc<ServerAPIClient>, ibt_path: &str, s
         println!("[POS_SVC_USER] State: {state}");
     });
 
-    // Run telemetry collection (publisher) using the existing connection
+    // Run telemetry collection (publisher) using the stream
     let bus_clone = bus.clone();
-    let stream = connection.subscribe::<TelemetryFrame>(UpdateRate::Max(60));
-    connection.release_frame_sender();
     let publisher = tokio::spawn(async move {
-        let _connection = connection; // Keep alive to prevent Drop from cancelling Driver
-        let mut stream = stream;
         let mut published_count: u64 = 0;
 
-        while let Some(frame) = stream.next().await {
+        while let Some(frame) = stream.next_frame().await {
             // Update position service
             if let Err(error) = tx.send(PositionState {
                 lap_dist_pct: frame.lap_distance_pct,
@@ -161,6 +153,9 @@ pub async fn run_single_session(client: &Arc<ServerAPIClient>, ibt_path: &str, s
 
     // Await publisher completion (replay EOF) instead of sleeping
     let _ = publisher.await;
+
+    // Sleep to allow handlers to finish working
+    tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
 
     info!("Shutting down session...");
 
