@@ -96,7 +96,6 @@ def extract_lap_metrics(
     throttle_threshold: float = THROTTLE_THRESHOLD,
     corner_segments: list[CornerSegmentInput] | None = None,
     lateral_positions: list[float] | None = None,
-    track_length: float | None = None,
     corner_mode: CornerDetectionMode = CornerDetectionMode.SEGMENTS_WITH_FALLBACK,
 ) -> LapMetrics:
     """
@@ -136,12 +135,11 @@ def extract_lap_metrics(
         corner_mode != CornerDetectionMode.AUTO
         and corner_segments is not None
         and len(corner_segments) > 0
-        and track_length is not None
     )
 
-    if can_use_segments and corner_segments is not None and track_length is not None:
+    if can_use_segments and corner_segments is not None:
         corners = _extract_corners_from_segments(
-            frames, corner_segments, track_length, lateral_positions, throttle_threshold
+            frames, corner_segments, lateral_positions, throttle_threshold
         )
         logger.debug(f"Extracted {len(corners)} corners from {len(corner_segments)} segments")
     elif corner_mode == CornerDetectionMode.SEGMENTS:
@@ -477,7 +475,6 @@ def _find_apex_in_segment(
 def _extract_corners_from_segments(
     frames: list[TelemetryFrame],
     segments: list[CornerSegmentInput],
-    track_length: float,
     lateral_positions: list[float] | None,
     throttle_threshold: float,
 ) -> list[CornerMetrics]:
@@ -497,13 +494,11 @@ def _extract_corners_from_segments(
     corners: list[CornerMetrics] = []
 
     for segment in sorted(segments, key=lambda s: s.corner_number):
-        # Convert meters to lap_distance_pct
-        start_pct = segment.start_distance / track_length
-        end_pct = segment.end_distance / track_length
-
         # Find frame indices within segment
         segment_indices = [
-            i for i, f in enumerate(frames) if start_pct <= f.lap_distance_pct <= end_pct
+            i
+            for i, f in enumerate(frames)
+            if segment.start_distance <= f.lap_distance <= segment.end_distance
         ]
 
         if len(segment_indices) < 2:

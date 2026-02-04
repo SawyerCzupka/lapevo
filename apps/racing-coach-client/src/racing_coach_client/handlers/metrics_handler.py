@@ -64,7 +64,6 @@ class MetricsHandler:
             # Fetch track data if service available
             corner_segments = None
             lateral_positions = None
-            track_length = None
 
             if self.track_service:
                 track_id = session_frame.track_id
@@ -78,13 +77,11 @@ class MetricsHandler:
                     if boundary:
                         augmented = compute_lateral_positions(boundary, lap_telemetry)
                         lateral_positions = augmented.lateral_positions
-                        track_length = boundary.track_length
                         logger.debug(
                             f"Using {len(corner_segments)} corner segments with lateral positions"
                         )
                     else:
                         # Have segments but no boundary - can still use segments with lateral G apex
-                        track_length = None  # Will fall back to auto-detection
                         logger.debug(
                             f"Have {len(corner_segments)} segments but no boundary - "
                             "will use lateral G for apex detection"
@@ -97,7 +94,6 @@ class MetricsHandler:
                 lap_number=lap_telemetry.frames[0].lap_number if lap_telemetry.frames else None,
                 corner_segments=corner_segments,
                 lateral_positions=lateral_positions,
-                track_length=track_length,
                 corner_mode=self.corner_mode,
             )
             extraction_time = time.time() - start_time
