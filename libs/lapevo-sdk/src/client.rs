@@ -24,6 +24,15 @@ use crate::models::{
 
 const DEVICE_TOKEN_HEADER: &str = "X-Device-Token";
 
+/// Result of authentication attempt during client initialization.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum AuthResult {
+    /// Client is authenticated (token loaded and optionally validated).
+    Authenticated,
+    /// Client is not authenticated (no token available or auth was skipped/failed).
+    Unauthenticated,
+}
+
 /// HTTP client for the Racing Coach API.
 ///
 /// This client is designed to be cloned and shared across tasks.
@@ -104,6 +113,124 @@ impl ServerAPIClient {
         let client = Self::new(base_url)?;
         client.load_stored_token().await?;
         Ok(client)
+    }
+
+    /// Creates a client and attempts authentication from stored credentials.
+    ///
+    /// This is a high-level constructor that handles the complete authentication flow:
+    /// 1. Creates a new client
+    /// 2. Attempts to load stored credentials
+    /// 3. Optionally validates credentials against the server
+    /// 4. Optionally triggers re-authentication if needed
+    ///
+    /// # Parameters
+    ///
+    /// * `base_url` - Server URL
+    /// * `device_name` - Device identifier for authentication
+    /// * `validate` - If true, validate token against server; if false, trust stored token
+    /// * `renew_if_needed` - If true, auto-trigger device auth flow when no valid token
+    ///
+    /// # Returns
+    ///
+    /// Always returns a usable client. Check `AuthResult` to determine if authenticated.
+    ///
+    /// # Behavior Matrix
+    ///
+    /// | Stored Token | validate | renew_if_needed | Behavior |
+    /// |--------------|----------|-----------------|----------|
+    /// | Yes          | false    | -               | Trust token → `Authenticated` |
+    /// | Yes          | true     | false           | Validate; if fails → `Unauthenticated` |
+    /// | Yes          | true     | true            | Validate; if fails → re-auth |
+    /// | No           | -        | false           | → `Unauthenticated` |
+    /// | No           | -        | true            | Trigger device flow |
+    pub async fn new_with_auth(
+        base_url: impl Into<String>,
+        device_name: &str,
+        validate: bool,
+        renew_if_needed: bool,
+    ) -> ApiResult<(Self, AuthResult)> {
+        let client = Self::new(base_url)?;
+
+        // Try to load stored token
+        let has_token = match client.load_stored_token().await {
+            Ok(loaded) => {
+                if loaded {
+                    info!("Loaded stored authentication token");
+                }
+                loaded
+            }
+            Err(e) => {
+                warn!("Failed to load stored credentials: {}", e);
+                false
+            }
+        };
+
+        if has_token {
+            if validate {
+                // Check if server is reachable before validating
+                if !client.check_server_reachable().await {
+                    warn!(
+                        "Server is not reachable — trusting stored token without validation"
+                    );
+                    return Ok((client, AuthResult::Authenticated));
+                }
+
+                // Validate the token
+                match client.get_me().await {
+                    Ok(user) => {
+                        info!(
+                            "Authenticated as {} ({})",
+                            user.display_name.as_deref().unwrap_or("unknown"),
+                            user.email
+                        );
+                        return Ok((client, AuthResult::Authenticated));
+                    }
+                    Err(ApiError::Unauthorized) => {
+                        warn!("Stored credentials are invalid");
+                        // Clear invalid credentials
+                        if let Err(e) = client.logout().await {
+                            warn!("Failed to clear invalid credentials: {}", e);
+                        }
+
+                        if renew_if_needed {
+                            info!("Triggering re-authentication");
+                            match client.authenticate(device_name).await {
+                                Ok(()) => return Ok((client, AuthResult::Authenticated)),
+                                Err(e) => {
+                                    warn!("Re-authentication failed: {}", e);
+                                    return Ok((client, AuthResult::Unauthenticated));
+                                }
+                            }
+                        } else {
+                            return Ok((client, AuthResult::Unauthenticated));
+                        }
+                    }
+                    Err(e) => {
+                        warn!("Failed to validate credentials: {} — trusting stored token", e);
+                        return Ok((client, AuthResult::Authenticated));
+                    }
+                }
+            } else {
+                // Trust stored token without validation
+                debug!("Trusting stored token without validation");
+                return Ok((client, AuthResult::Authenticated));
+            }
+        }
+
+        // No stored token
+        if renew_if_needed {
+            info!("No stored credentials found — triggering device authentication");
+            match client.authenticate(device_name).await {
+                Ok(()) => Ok((client, AuthResult::Authenticated)),
+                Err(e) => {
+                    warn!("Device authentication failed: {}", e);
+                    Ok((client, AuthResult::Unauthenticated))
+                }
+            }
+        } else {
+            info!("No stored credentials found — continuing without authentication");
+            Ok((client, AuthResult::Unauthenticated))
+        }
     }
 
     /// Check if the client has an authentication token set.

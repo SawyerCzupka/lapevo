@@ -23,7 +23,7 @@ mod error;
 mod models;
 
 pub use auth::{has_credentials, StoredCredentials};
-pub use client::ServerAPIClient;
+pub use client::{AuthResult, ServerAPIClient};
 pub use error::{ApiError, ApiResult};
 pub use models::{
     // Telemetry types
