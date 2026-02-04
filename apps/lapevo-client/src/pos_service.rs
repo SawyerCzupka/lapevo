@@ -23,8 +23,10 @@ impl Display for PositionState {
 }
 
 impl PositionService {
-    pub fn new(rx: watch::Receiver<PositionState>) -> Self {
-        Self { rx }
+    pub fn new() -> (Self, tokio::sync::watch::Sender<PositionState>) {
+        let (tx, rx) = watch::channel(PositionState::default());
+
+        (Self { rx }, tx)
     }
 
     pub async fn wait_until_position(&mut self, target_pct: f32) -> PositionState {
