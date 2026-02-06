@@ -18,7 +18,11 @@ pub enum Command {
     /// Replay telemetry from an IBT file
     Replay {
         /// Path to IBT file
-        #[arg(short, long)]
+        #[arg(
+            short,
+            long,
+            default_value = "../../sample_data/ligierjsp320_bathurst 2025-11-17 18-15-16.ibt"
+        )]
         file: PathBuf,
 
         /// Playback speed multiplier

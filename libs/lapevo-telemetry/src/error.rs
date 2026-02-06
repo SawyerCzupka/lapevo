@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -13,6 +15,9 @@ pub enum TelemetryError {
 
     #[error("session not available")]
     NoSession,
+
+    #[error("file not found: {0}")]
+    FileNotFound(PathBuf),
 
     #[error("{0}")]
     Other(String),

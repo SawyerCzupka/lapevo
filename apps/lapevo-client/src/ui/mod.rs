@@ -2,17 +2,20 @@ use std::sync::Arc;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use crossterm::terminal;
+use lapevo_iracing::IbtReplaySource;
 use lapevo_sdk::ServerAPIClient;
+use lapevo_telemetry::{TelemetryError, TelemetrySource};
 use thiserror::Error;
+use tokio_util::sync::CancellationToken;
 
 use crate::session::{run_session, SessionError};
-use crate::source::{create_replay_source, ReplayConfig, SourceError};
+use crate::source::ReplayConfig;
 
 /// Errors that can occur in interactive mode.
 #[derive(Debug, Error)]
 pub enum InteractiveError {
-    #[error("Source error: {0}")]
-    Source(#[from] SourceError),
+    #[error("Telemetry error: {0}")]
+    Telemetry(#[from] TelemetryError),
 
     #[error("Session error: {0}")]
     Session(#[from] SessionError),
@@ -67,8 +70,11 @@ async fn interactive_loop(
                 terminal::disable_raw_mode()?;
                 println!("\n[STARTING SESSION]");
 
-                let handle = create_replay_source(config)?;
-                run_session(client, handle.stream).await?;
+                let mut source =
+                    IbtReplaySource::new(config.file_path.clone(), config.speed)?;
+                if let Some(session) = source.wait_for_session().await? {
+                    run_session(client, session.stream, CancellationToken::new()).await?;
+                }
 
                 println!("\n[SESSION COMPLETE]");
                 terminal::enable_raw_mode()?;
