@@ -7,8 +7,9 @@ use lapevo_client::source::ReplayConfig;
 use lapevo_client::ui::run_interactive_replay;
 use lapevo_iracing::IbtReplaySource;
 use lapevo_sdk::{AuthResult, ServerAPIClient};
+use lapevo_tts::Tts;
 use tokio_util::sync::CancellationToken;
-use tracing::info;
+use tracing::{info, warn};
 use tracing_subscriber::{EnvFilter, fmt};
 
 #[tokio::main]
@@ -25,6 +26,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .init();
 
     info!("Lapevo Client v{}", env!("CARGO_PKG_VERSION"));
+
+    // Initialize TTS
+    let _tts = match Tts::new().await {
+        Ok(tts) => {
+            if let Err(e) = tts.speak("Lapevo client started").await {
+                warn!("TTS startup speak failed: {e}");
+            }
+            Some(tts)
+        }
+        Err(e) => {
+            warn!("Failed to initialize TTS: {e}");
+            None
+        }
+    };
 
     let cli = Cli::parse();
 

@@ -1,0 +1,10 @@
+[workspace]
+resolver = "3"
+members = [
+    "apps/lapevo-client",
+    "libs/lapevo-eventbus",
+    "libs/lapevo-iracing",
+    "libs/lapevo-sdk",
+    "libs/lapevo-telemetry",
+    "libs/lapevo-tts",
+]

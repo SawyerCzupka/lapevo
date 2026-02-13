@@ -1,0 +1,15 @@
+[package]
+name = "lapevo-tts"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait = "0.1"
+thiserror = "2.0"
+tracing = "0.1"
+tokio = { version = "1", features = ["fs", "io-util"] }
+rodio = "0.21"
+kokoro-tts = "0.3.2"
+reqwest = { version = "0.12", features = ["stream"] }
+futures-util = "0.3"
+dirs = "6"
