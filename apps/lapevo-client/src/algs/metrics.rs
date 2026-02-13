@@ -70,31 +70,25 @@ pub fn extract_lap_metrics(
     let corners = match corner_mode {
         CornerDetectionMode::Auto => extract_corners_auto(frames, config)?,
 
-        CornerDetectionMode::Segments => {
-            match (corner_segments, get_track_length(boundary)) {
-                (Some(segs), Some(len)) if !segs.is_empty() => {
-                    extract_corners_from_segments(frames, segs, len, boundary, config)?
-                }
-                _ => Vec::new(), // Segments mode with no segments returns empty
+        CornerDetectionMode::Segments => match corner_segments {
+            Some(segs) if !segs.is_empty() => {
+                extract_corners_from_segments(frames, segs, boundary, config)?
             }
-        }
+            _ => Vec::new(), // Segments mode with no segments returns empty
+        },
 
-        CornerDetectionMode::SegmentsWithFallback => {
-            match (corner_segments, get_track_length(boundary)) {
-                (Some(segs), Some(len)) if !segs.is_empty() => {
-                    extract_corners_from_segments(frames, segs, len, boundary, config)?
-                }
-                _ => extract_corners_auto(frames, config)?,
+        CornerDetectionMode::SegmentsWithFallback => match corner_segments {
+            Some(segs) if !segs.is_empty() => {
+                extract_corners_from_segments(frames, segs, boundary, config)?
             }
-        }
+            _ => extract_corners_auto(frames, config)?,
+        },
     };
 
     // Compute lap-wide statistics
-    let (max_speed, min_speed) = frames
-        .iter()
-        .fold((f64::MIN, f64::MAX), |(max, min), f| {
-            (max.max(f.speed), min.min(f.speed))
-        });
+    let (max_speed, min_speed) = frames.iter().fold((f64::MIN, f64::MAX), |(max, min), f| {
+        (max.max(f.speed), min.min(f.speed))
+    });
 
     let average_corner_speed = if corners.is_empty() {
         0.0
@@ -116,9 +110,4 @@ pub fn extract_lap_metrics(
         max_speed,
         min_speed,
     })
-}
-
-/// Get track length from boundary if available.
-fn get_track_length(boundary: Option<&TrackBoundaryResponse>) -> Option<f64> {
-    boundary.and_then(|b| b.track_length)
 }

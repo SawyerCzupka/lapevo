@@ -1,7 +1,9 @@
 use std::path::{Path, PathBuf};
 
 use crate::error::{IracingError, Result};
-use crate::ibt::header::{IbtDiskSubHeader, IbtHeader, IRSDK_VAR_HEADER_SIZE, extract_variable_schema};
+use crate::ibt::header::{
+    IRSDK_VAR_HEADER_SIZE, IbtDiskSubHeader, IbtHeader, extract_variable_schema,
+};
 use crate::ibt::session::parse_session_info;
 use crate::mapping::map_to_telemetry_frame;
 use crate::raw_frame::RawFrame;
@@ -25,7 +27,7 @@ pub struct IbtFile {
 impl IbtFile {
     /// Open an IBT file for reading.
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
-        let data = std::fs::read(path.as_ref()).map_err(|e| IracingError::Io(e))?;
+        let data = std::fs::read(path.as_ref()).map_err(IracingError::Io)?;
         Self::from_bytes(data, path.as_ref().to_path_buf())
     }
 
@@ -38,8 +40,8 @@ impl IbtFile {
         let schema = extract_variable_schema(&mut cursor, &header)?;
 
         // Calculate frame data start
-        let var_headers_end = header.var_header_offset as usize
-            + header.num_vars as usize * IRSDK_VAR_HEADER_SIZE;
+        let var_headers_end =
+            header.var_header_offset as usize + header.num_vars as usize * IRSDK_VAR_HEADER_SIZE;
 
         let session_info_end = if header.session_info_len > 0 {
             (header.session_info_offset + header.session_info_len) as usize
@@ -83,7 +85,11 @@ impl IbtFile {
         })
     }
 
-    fn parse_session(data: &[u8], header: &IbtHeader, _schema: &VariableSchema) -> Result<SessionInfo> {
+    fn parse_session(
+        data: &[u8],
+        header: &IbtHeader,
+        _schema: &VariableSchema,
+    ) -> Result<SessionInfo> {
         if header.session_info_len <= 0 || header.session_info_offset <= 0 {
             return Ok(SessionInfo {
                 track_name: String::new(),
@@ -92,7 +98,11 @@ impl IbtFile {
                 car_name: String::new(),
                 car_id: 0,
                 session_type: String::new(),
-                tick_rate: if header.tick_rate > 0 { header.tick_rate as f64 } else { 60.0 },
+                tick_rate: if header.tick_rate > 0 {
+                    header.tick_rate as f64
+                } else {
+                    60.0
+                },
             });
         }
 
@@ -110,12 +120,20 @@ impl IbtFile {
                 car_name: String::new(),
                 car_id: 0,
                 session_type: String::new(),
-                tick_rate: if header.tick_rate > 0 { header.tick_rate as f64 } else { 60.0 },
+                tick_rate: if header.tick_rate > 0 {
+                    header.tick_rate as f64
+                } else {
+                    60.0
+                },
             });
         }
 
         let cleaned = yaml_utils::preprocess_iracing_yaml(&raw_yaml)?;
-        let tick_rate = if header.tick_rate > 0 { header.tick_rate as f64 } else { 60.0 };
+        let tick_rate = if header.tick_rate > 0 {
+            header.tick_rate as f64
+        } else {
+            60.0
+        };
         parse_session_info(&cleaned, tick_rate)
     }
 
@@ -155,7 +173,7 @@ impl IbtFile {
     /// Read a TelemetryFrame by index.
     pub fn frame(&self, index: usize) -> Result<TelemetryFrame> {
         let raw = self.raw_frame(index)?;
-        map_to_telemetry_frame(&raw, &self.schema).map_err(Into::into)
+        map_to_telemetry_frame(&raw, &self.schema)
     }
 }
 
@@ -163,14 +181,20 @@ impl lapevo_telemetry::TelemetryReader for IbtFile {
     fn read_all(&self) -> lapevo_telemetry::error::Result<Vec<TelemetryFrame>> {
         let mut frames = Vec::with_capacity(self.total_frames);
         for i in 0..self.total_frames {
-            frames.push(self.frame(i).map_err(lapevo_telemetry::TelemetryError::from)?);
+            frames.push(
+                self.frame(i)
+                    .map_err(lapevo_telemetry::TelemetryError::from)?,
+            );
         }
         Ok(frames)
     }
 
-    fn frames(&self) -> Box<dyn Iterator<Item = lapevo_telemetry::error::Result<TelemetryFrame>> + '_> {
+    fn frames(
+        &self,
+    ) -> Box<dyn Iterator<Item = lapevo_telemetry::error::Result<TelemetryFrame>> + '_> {
         Box::new((0..self.total_frames).map(move |i| {
-            self.frame(i).map_err(lapevo_telemetry::TelemetryError::from)
+            self.frame(i)
+                .map_err(lapevo_telemetry::TelemetryError::from)
         }))
     }
 

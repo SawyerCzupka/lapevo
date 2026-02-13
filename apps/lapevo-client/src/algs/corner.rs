@@ -59,9 +59,7 @@ pub fn extract_corners_auto(
     // Handle corner that extends to end of sequence
     if in_corner {
         let exit_idx = frames.len() - 1;
-        if let Some(metrics) =
-            compute_corner_metrics(frames, turn_in_idx, exit_idx, None, config)
-        {
+        if let Some(metrics) = compute_corner_metrics(frames, turn_in_idx, exit_idx, None, config) {
             corners.push(metrics);
         }
     }
@@ -89,7 +87,6 @@ pub fn extract_corners_auto(
 pub fn extract_corners_from_segments(
     frames: &[TelemetryFrame],
     segments: &[CornerSegment],
-    track_length: f64,
     boundary: Option<&TrackBoundaryResponse>,
     config: &ExtractConfig,
 ) -> AlgsResult<Vec<CornerMetrics>> {
@@ -110,7 +107,7 @@ pub fn extract_corners_from_segments(
             .iter()
             .enumerate()
             .filter_map(|(idx, frame)| {
-                if is_in_segment(frame.lap_distance, segment, track_length) {
+                if is_in_segment(frame.lap_distance, segment) {
                     Some(idx)
                 } else {
                     None
@@ -145,7 +142,7 @@ pub fn extract_corners_from_segments(
 }
 
 /// Check if a distance falls within a corner segment.
-fn is_in_segment(lap_distance: f64, segment: &CornerSegment, _track_length: f64) -> bool {
+fn is_in_segment(lap_distance: f64, segment: &CornerSegment) -> bool {
     let start = segment.start_distance;
     let end = segment.end_distance;
 

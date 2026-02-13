@@ -83,8 +83,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         Command::Live { .. } => {
-            eprintln!("Live mode is not yet implemented (requires Windows shared memory).");
-            std::process::exit(1);
+            #[cfg(target_os = "windows")]
+            {
+                let source = lapevo_iracing::PitwallLiveSource::new();
+                run_client_loop(&client, Box::new(source), token).await?;
+            }
+            #[cfg(not(target_os = "windows"))]
+            {
+                eprintln!("Live mode requires Windows.");
+                std::process::exit(1);
+            }
         }
 
         Command::Network { .. } => {

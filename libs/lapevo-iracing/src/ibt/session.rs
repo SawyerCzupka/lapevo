@@ -107,7 +107,7 @@ pub fn parse_session_info(yaml: &str, tick_rate: f64) -> Result<SessionInfo> {
 }
 
 /// Parse track length string like "6.1441 km" into meters.
-fn parse_track_length(s: &str) -> Option<f32> {
+pub(crate) fn parse_track_length(s: &str) -> Option<f32> {
     let s = s.trim();
     if let Some(km_str) = s.strip_suffix("km").or_else(|| s.strip_suffix("Km")) {
         km_str.trim().parse::<f32>().ok().map(|km| km * 1000.0)

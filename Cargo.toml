@@ -7,4 +7,6 @@ members = [
     "libs/lapevo-sdk",
     "libs/lapevo-telemetry",
     "libs/lapevo-tts",
+    "libs/pitwall",
+    "libs/pitwall-derive",
 ]

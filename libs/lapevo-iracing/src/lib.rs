@@ -12,6 +12,11 @@ pub mod live;
 #[cfg(all(feature = "live", target_os = "windows"))]
 pub mod live_mmap;
 
+#[cfg(all(feature = "pitwall", target_os = "windows"))]
+pub mod pitwall_live;
+#[cfg(all(feature = "pitwall", target_os = "windows"))]
+pub use pitwall_live::PitwallLiveSource;
+
 pub use error::IracingError;
 pub use ibt::IbtFile;
 pub use mapping::map_to_telemetry_frame;
