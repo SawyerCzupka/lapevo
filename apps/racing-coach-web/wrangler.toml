@@ -1,0 +1,24 @@
+name = "lapevo-web"
+main = "./worker/index.ts"
+compatibility_date = "2026-02-16"
+
+[[routes]]
+pattern = "app.lapevo.com"
+custom_domain = true
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[vars]
+# API_BASE_URL = "https://api.lapevo.com"
+API_BASE_URL = "https://unacceptable-moria-scnw-76982932.koyeb.app"
+
+[observability]
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+persist = true

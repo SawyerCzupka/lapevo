@@ -42,7 +42,7 @@ Modern web dashboard for analyzing racing telemetry data from iRacing sessions.
 
 ### Local Setup
 
-\`\`\`bash
+```bash
 # Install dependencies
 npm install
 
@@ -54,34 +54,60 @@ npm run generate:api
 npm run dev
 
 # Visit http://localhost:3000
-\`\`\`
+```
 
 ### Available Scripts
 
-- \`npm run dev\` - Start development server (port 3000)
-- \`npm run build\` - Build for production
-- \`npm run preview\` - Preview production build
-- \`npm run lint\` - Lint code with ESLint
-- \`npm run format\` - Format code with Prettier
-- \`npm run generate:api\` - Generate TypeScript API client from OpenAPI
+- `npm run dev` - Start development server (port 3000)
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Lint code with ESLint
+- `npm run format` - Format code with Prettier
+- `npm run generate:api` - Generate TypeScript API client from OpenAPI
 
 ## Production Deployment
 
-### Docker
+The app is deployed to Cloudflare Workers via Wrangler. The Worker serves the static SPA build and proxies `/api/*` requests to the backend — the backend URL is never baked into the JS bundle.
 
-\`\`\`bash
-# Build the image
-docker build -t racing-coach-web .
+```bash
+# Deploy to Cloudflare Workers
+npx wrangler deploy
 
-# Run the container
-docker run -p 3000:80 racing-coach-web
-\`\`\`
+# Preview locally using the Workers runtime (not Vite)
+npx wrangler dev
+```
 
-### Docker Compose
+### How the Proxy Works
 
-The app is included in the root docker-compose.yaml.
+The Worker (`worker/index.ts`) acts as a Backend for Frontend (BFF):
 
-The web dashboard will be available at http://localhost:3000
+- Requests to `/api/*` are forwarded to `env.API_BASE_URL` (the backend server)
+- All other requests are served from the static `dist/` build via the `ASSETS` binding
+- `run_worker_first = ["/api/*"]` in `wrangler.toml` ensures API paths hit the Worker before the asset handler
+
+This means the SPA makes same-origin requests (no CORS), and the backend URL is never exposed to the browser.
+
+### Environment Variables
+
+`API_BASE_URL` is set in `wrangler.toml` under `[vars]` (plaintext, visible in source). This is fine for a public-facing URL. For values that should be kept secret (e.g. an internal service token used to authenticate Worker→backend traffic), use Wrangler secrets — they are encrypted at rest and never appear in source:
+
+```bash
+npx wrangler secret put MY_SECRET
+```
+
+Secrets are accessed the same way as vars (`env.MY_SECRET`) in the Worker code.
+
+### TypeScript Setup for the Worker
+
+The `worker/` directory uses its own `tsconfig.worker.json`, referenced from the root `tsconfig.json`. This separation is necessary because the Workers runtime redefines globals like `Request`, `Response`, and `fetch` differently from the browser DOM types used by the React app — sharing a tsconfig would cause type conflicts.
+
+`npx wrangler types` generates `worker-configuration.d.ts` at the project root. This file provides typed `Env` bindings (e.g. `ASSETS: Fetcher`, `API_BASE_URL: string`) and Workers runtime globals matched to your `compatibility_date`. Re-run it whenever bindings in `wrangler.toml` change:
+
+```bash
+npx wrangler types
+```
+
+`worker-configuration.d.ts` is included in `tsconfig.worker.json` and committed to source control.
 
 ## Architecture
 

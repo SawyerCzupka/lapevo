@@ -1,49 +1,55 @@
-$schema: '../../.moon/cache/schemas/project.json'
+$schema: "../../.moon/cache/schemas/project.json"
 
 id: web
-type: 'application'
-language: 'javascript'
+type: "application"
+language: "javascript"
 
 tags:
-  - 'javascript'
-  - 'react'
-  - 'frontend'
+  - "javascript"
+  - "react"
+  - "frontend"
 
 fileGroups:
   sources:
-    - 'src/**/*.{ts,tsx}'
+    - "src/**/*.{ts,tsx}"
   configs:
-    - 'package.json'
-    - 'tsconfig.json'
-    - 'vite.config.ts'
-    - 'orval.config.ts'
+    - "package.json"
+    - "tsconfig.json"
+    - "vite.config.ts"
+    - "orval.config.ts"
 
 tasks:
   build:
-    command: 'npm run build'
+    command: "npm run build"
     inputs:
-      - 'src/**/*'
-      - 'public/**/*'
-      - 'package.json'
-      - 'tsconfig.json'
-      - 'vite.config.ts'
-      - 'index.html'
+      - "src/**/*"
+      - "public/**/*"
+      - "package.json"
+      - "tsconfig.json"
+      - "vite.config.ts"
+      - "index.html"
     outputs:
-      - 'dist'
+      - "dist"
     deps:
-      - '~:install'
+      - "~:install"
     options:
-      cache: true
+      cache: false
 
   generate-api:
-    command: 'npm run generate:api'
+    command: "npm run generate:api"
     inputs:
-      - 'orval.config.ts'
+      - "orval.config.ts"
     outputs:
-      - 'src/api/generated'
+      - "src/api/generated"
     deps:
-      - '~:install'
+      - "~:install"
     options:
       cache: true
 
+  deploy:
+    command: "npx wrangler@latest deploy"
+    deps:
+      - "~:build"
+    options:
+      cache: false
 # Inherits dev, lint, format, install from .moon/tasks/javascript.yml

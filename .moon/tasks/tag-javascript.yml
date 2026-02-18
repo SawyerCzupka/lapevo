@@ -1,38 +1,38 @@
 # Common tasks for JavaScript projects using npm
 # Inherited by projects with tags: ['javascript'] (via tag-* filename convention)
-$schema: '../cache/schemas/tasks.json'
+$schema: "../cache/schemas/tasks.json"
 
 tasks:
   build:
     inputs:
-      - 'src/**/*'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'tsconfig.json'
+      - "src/**/*"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
     outputs:
-      - 'dist'
+      - "dist"
     deps:
-      - '~:install'
+      - "~:install"
     options:
-      cache: true
+      cache: false
 
   dev:
-    command: 'npm run dev'
+    command: "npm run dev"
     inputs:
-      - 'src/**/*'
-      - 'package.json'
+      - "src/**/*"
+      - "package.json"
     deps:
-      - '~:install'
+      - "~:install"
     options:
       persistent: true
       cache: false
 
   install:
-    command: 'npm install'
+    command: "npm install"
     inputs:
-      - 'package.json'
-      - 'package-lock.json'
+      - "package.json"
+      - "package-lock.json"
     outputs:
-      - 'node_modules'
+      - "node_modules"
     options:
       cache: false
