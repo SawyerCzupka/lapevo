@@ -39,6 +39,7 @@ pub use models::{
     LapUploadResponse,
     MetricsUploadRequest,
     MetricsUploadResponse,
+    ReferenceLapResponse,
     SessionFrame,
     TelemetryFrame,
     TireSideData,

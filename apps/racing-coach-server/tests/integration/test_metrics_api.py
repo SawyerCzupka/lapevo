@@ -6,7 +6,8 @@ from uuid import uuid4
 import pytest
 from httpx import AsyncClient
 from racing_coach_core.algs.events import BrakingMetrics, CornerMetrics, LapMetrics
-from racing_coach_server.telemetry.models import Lap, LapMetricsDB
+from racing_coach_server.lap_metrics.models import LapMetricsDB
+from racing_coach_server.track_sessions.laps.models import Lap
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -153,7 +154,7 @@ class TestMetricsAPI:
             },
         }
         response = await test_client.post(
-            "/api/v1/metrics/lap",
+            "/api/v1/lap_metrics/lap",
             json=data,
         )
 
@@ -226,7 +227,7 @@ class TestMetricsAPI:
         await db_session.commit()
 
         # Retrieve metrics
-        response = await test_client.get(f"/api/v1/metrics/lap/{lap.id}")
+        response = await test_client.get(f"/api/v1/lap_metrics/lap/{lap.id}")
 
         # Assert
         assert response.status_code == 200
@@ -244,7 +245,7 @@ class TestMetricsAPI:
     ) -> None:
         """Test retrieval of metrics for non-existent lap."""
         fake_lap_id = uuid4()
-        response = await test_client.get(f"/api/v1/metrics/lap/{fake_lap_id}")
+        response = await test_client.get(f"/api/v1/lap_metrics/lap/{fake_lap_id}")
 
         assert response.status_code == 404
         assert "not found" in response.json()["detail"].lower()
@@ -257,7 +258,7 @@ class TestMetricsAPI:
         fake_lap_id = uuid4()
 
         response = await test_client.post(
-            "/api/v1/metrics/lap",
+            "/api/v1/lap_metrics/lap",
             json={
                 "lap_id": str(fake_lap_id),
                 "lap_metrics": {
@@ -313,7 +314,7 @@ class TestMetricsAPI:
                 "min_speed": 40.0,
             },
         }
-        response1 = await test_client.post("/api/v1/metrics/lap", json=metrics_v1)
+        response1 = await test_client.post("/api/v1/lap_metrics/lap", json=metrics_v1)
         assert response1.status_code == 200
 
         # Upload metrics second time with different values
@@ -331,7 +332,7 @@ class TestMetricsAPI:
                 "min_speed": 35.0,  # Changed
             },
         }
-        response2 = await test_client.post("/api/v1/metrics/lap", json=metrics_v2)
+        response2 = await test_client.post("/api/v1/lap_metrics/lap", json=metrics_v2)
         assert response2.status_code == 200
 
         # Verify only one metrics record exists with updated values
@@ -428,7 +429,7 @@ class TestMetricsAPI:
 
         # Compare laps
         response = await test_client.get(
-            f"/api/v1/metrics/compare?lap_id_1={lap1.id}&lap_id_2={lap2.id}"
+            f"/api/v1/lap_comparison?lap_id_1={lap1.id}&lap_id_2={lap2.id}"
         )
 
         # Assert
@@ -460,7 +461,7 @@ class TestMetricsAPI:
         fake_lap_id_2 = uuid4()
 
         response = await test_client.get(
-            f"/api/v1/metrics/compare?lap_id_1={fake_lap_id_1}&lap_id_2={fake_lap_id_2}"
+            f"/api/v1/lap_comparison?lap_id_1={fake_lap_id_1}&lap_id_2={fake_lap_id_2}"
         )
 
         assert response.status_code == 404

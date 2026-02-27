@@ -16,37 +16,51 @@ from racing_coach_server.auth.dependencies import (
 )
 from racing_coach_server.auth.service import AuthService
 from racing_coach_server.database.dependencies import AsyncSessionDep
-from racing_coach_server.metrics.service import MetricsService
-from racing_coach_server.sessions.service import SessionService
+from racing_coach_server.lap_metrics.service import LapMetricsService
+from racing_coach_server.lap_reference.service import LapReferenceService
 from racing_coach_server.telemetry.service import TelemetryService
+from racing_coach_server.track_sessions.laps.service import LapService
+from racing_coach_server.track_sessions.service import TrackSessionService
 
 
-# Session service (sessions + laps)
-async def get_session_service(
-    db: AsyncSessionDep,
-) -> SessionService:
-    """Provide SessionService with injected AsyncSession."""
-    return SessionService(db)
+# Track session service
+async def get_track_session_service(db: AsyncSessionDep) -> TrackSessionService:
+    """Provide TrackSessionService with injected AsyncSession."""
+    return TrackSessionService(db)
 
 
-SessionServiceDep = Annotated[SessionService, Depends(get_session_service)]
+TrackSessionServiceDep = Annotated[TrackSessionService, Depends(get_track_session_service)]
 
 
-# Metrics service
-async def get_metrics_service(
-    db: AsyncSessionDep,
-) -> MetricsService:
-    """Provide MetricsService with injected AsyncSession."""
-    return MetricsService(db)
+# Lap service
+async def get_lap_service(db: AsyncSessionDep) -> LapService:
+    """Provide LapService with injected AsyncSession."""
+    return LapService(db)
 
 
-MetricsServiceDep = Annotated[MetricsService, Depends(get_metrics_service)]
+LapServiceDep = Annotated[LapService, Depends(get_lap_service)]
 
 
-# Telemetry service (telemetry data/frames)
-async def get_telemetry_service(
-    db: AsyncSessionDep,
-) -> TelemetryService:
+# Lap metrics service
+async def get_lap_metrics_service(db: AsyncSessionDep) -> LapMetricsService:
+    """Provide LapMetricsService with injected AsyncSession."""
+    return LapMetricsService(db)
+
+
+LapMetricsServiceDep = Annotated[LapMetricsService, Depends(get_lap_metrics_service)]
+
+
+# Lap reference service
+async def get_lap_reference_service(db: AsyncSessionDep) -> LapReferenceService:
+    """Provide LapReferenceService with injected AsyncSession."""
+    return LapReferenceService(db)
+
+
+LapReferenceServiceDep = Annotated[LapReferenceService, Depends(get_lap_reference_service)]
+
+
+# Telemetry service
+async def get_telemetry_service(db: AsyncSessionDep) -> TelemetryService:
     """Provide TelemetryService with injected AsyncSession."""
     return TelemetryService(db)
 
@@ -54,16 +68,21 @@ async def get_telemetry_service(
 TelemetryServiceDep = Annotated[TelemetryService, Depends(get_telemetry_service)]
 
 
-# Re-exported for convenience
 __all__ = [
     # Database
     "AsyncSessionDep",
-    # Sessions
-    "get_session_service",
-    "SessionServiceDep",
-    # Metrics
-    "get_metrics_service",
-    "MetricsServiceDep",
+    # Track sessions
+    "get_track_session_service",
+    "TrackSessionServiceDep",
+    # Laps
+    "get_lap_service",
+    "LapServiceDep",
+    # Lap metrics
+    "get_lap_metrics_service",
+    "LapMetricsServiceDep",
+    # Lap reference
+    "get_lap_reference_service",
+    "LapReferenceServiceDep",
     # Telemetry
     "get_telemetry_service",
     "TelemetryServiceDep",

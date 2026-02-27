@@ -8,7 +8,8 @@ from uuid import uuid4
 import pytest
 from httpx import ASGITransport, AsyncClient
 from racing_coach_server.app import app
-from racing_coach_server.telemetry.models import Lap, TrackSession
+from racing_coach_server.track_sessions.laps.models import Lap
+from racing_coach_server.track_sessions.models import TrackSession
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tests.polyfactories import (
@@ -84,11 +85,13 @@ class TestTelemetryRouter:
         # Use FastAPI dependency overrides
         from racing_coach_server.database.engine import get_async_session
         from racing_coach_server.dependencies import (
-            get_session_service,
+            get_lap_service,
             get_telemetry_service,
+            get_track_session_service,
         )
 
-        app.dependency_overrides[get_session_service] = mock_session_service_dep
+        app.dependency_overrides[get_track_session_service] = mock_session_service_dep
+        app.dependency_overrides[get_lap_service] = mock_session_service_dep
         app.dependency_overrides[get_telemetry_service] = mock_telemetry_service_dep
         app.dependency_overrides[get_async_session] = mock_db_dep
 
@@ -147,13 +150,13 @@ class TestTelemetryRouter:
             return mock_session_service
 
         # Use FastAPI dependency overrides
-        from racing_coach_server.dependencies import get_session_service
+        from racing_coach_server.dependencies import get_track_session_service
 
-        app.dependency_overrides[get_session_service] = mock_session_service_dep
+        app.dependency_overrides[get_track_session_service] = mock_session_service_dep
 
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Act
-            response = await client.get("/api/v1/telemetry/sessions/latest")
+            response = await client.get("/api/v1/track_sessions/latest")
 
         # Clean up override
         app.dependency_overrides.clear()
@@ -175,13 +178,13 @@ class TestTelemetryRouter:
             return mock_session_service
 
         # Use FastAPI dependency overrides
-        from racing_coach_server.dependencies import get_session_service
+        from racing_coach_server.dependencies import get_track_session_service
 
-        app.dependency_overrides[get_session_service] = mock_session_service_dep
+        app.dependency_overrides[get_track_session_service] = mock_session_service_dep
 
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             # Act
-            response = await client.get("/api/v1/telemetry/sessions/latest")
+            response = await client.get("/api/v1/track_sessions/latest")
 
         # Clean up override
         app.dependency_overrides.clear()

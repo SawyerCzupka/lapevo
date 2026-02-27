@@ -4,22 +4,22 @@ use std::sync::Arc;
 
 use chrono::Utc;
 use reqwest::Client;
-use serde::Deserialize;
 use serde::de::DeserializeOwned;
+use serde::Deserialize;
 use tokio::sync::RwLock;
 use tracing::{debug, info, instrument, warn};
 use uuid::Uuid;
 
 use crate::auth::{
-    DeviceAuthErrorCode, DeviceAuthorizationRequest, DeviceAuthorizationResponse,
-    DeviceTokenRequest, DeviceTokenResponse, StoredCredentials, delete_credentials,
-    load_credentials, save_credentials,
+    delete_credentials, load_credentials, save_credentials, DeviceAuthErrorCode,
+    DeviceAuthorizationRequest, DeviceAuthorizationResponse, DeviceTokenRequest,
+    DeviceTokenResponse, StoredCredentials,
 };
 use crate::error::{ApiError, ApiResult};
 use crate::models::{
     CornerSegmentListResponse, LapMetrics, LapTelemetry, LapUploadRequest, LapUploadResponse,
-    MetricsUploadRequest, MetricsUploadResponse, SessionFrame, TrackBoundaryListResponse,
-    TrackBoundaryResponse, UserResponse,
+    MetricsUploadRequest, MetricsUploadResponse, ReferenceLapResponse, SessionFrame,
+    TrackBoundaryListResponse, TrackBoundaryResponse, UserResponse,
 };
 
 const DEVICE_TOKEN_HEADER: &str = "X-Device-Token";
@@ -169,9 +169,7 @@ impl ServerAPIClient {
             if validate {
                 // Check if server is reachable before validating
                 if !client.check_server_reachable().await {
-                    warn!(
-                        "Server is not reachable — trusting stored token without validation"
-                    );
+                    warn!("Server is not reachable — trusting stored token without validation");
                     return Ok((client, AuthResult::Authenticated));
                 }
 
@@ -206,7 +204,10 @@ impl ServerAPIClient {
                         }
                     }
                     Err(e) => {
-                        warn!("Failed to validate credentials: {} — trusting stored token", e);
+                        warn!(
+                            "Failed to validate credentials: {} — trusting stored token",
+                            e
+                        );
                         return Ok((client, AuthResult::Authenticated));
                     }
                 }
@@ -496,7 +497,7 @@ impl ServerAPIClient {
         lap_metrics: &LapMetrics,
         lap_id: Uuid,
     ) -> ApiResult<MetricsUploadResponse> {
-        let url = format!("{}/api/v1/metrics/lap", self.base_url);
+        let url = format!("{}/api/v1/lap_metrics/lap", self.base_url);
 
         debug!("Uploading lap metrics to {}", url);
 
@@ -567,6 +568,62 @@ impl ServerAPIClient {
             .await?;
 
         self.handle_response(response).await
+    }
+
+    /// Fetch the best reference lap metrics for a track+car combination.
+    ///
+    /// Returns `Ok(None)` if no qualifying lap exists (server returns 404).
+    ///
+    /// # Arguments
+    ///
+    /// * `track_id` - The iRacing track ID
+    /// * `car_id` - The iRacing car ID
+    #[instrument(skip(self), fields(%track_id, %car_id))]
+    pub async fn fetch_reference_lap_metrics(
+        &self,
+        track_id: i32,
+        car_id: i32,
+    ) -> ApiResult<Option<ReferenceLapResponse>> {
+        let url = format!(
+            "{}/api/v1/reference?track_id={}&car_id={}",
+            self.base_url, track_id, car_id
+        );
+
+        debug!("Fetching reference lap from {}", url);
+
+        let response = self
+            .authenticated_request(reqwest::Method::GET, &url)
+            .await
+            .send()
+            .await?;
+
+        let status = response.status();
+
+        if status == reqwest::StatusCode::NOT_FOUND {
+            debug!(
+                "No reference lap found for track={} car={}",
+                track_id, car_id
+            );
+            return Ok(None);
+        }
+
+        if status == reqwest::StatusCode::UNAUTHORIZED {
+            return Err(ApiError::Unauthorized);
+        }
+
+        if status.is_success() {
+            let body = response.json::<ReferenceLapResponse>().await?;
+            return Ok(Some(body));
+        }
+
+        let message = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Unknown error".to_string());
+        Err(ApiError::ServerError {
+            status: status.as_u16(),
+            message,
+        })
     }
 
     /// Get the current authenticated user's profile.

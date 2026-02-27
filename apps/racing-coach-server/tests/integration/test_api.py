@@ -5,7 +5,9 @@ from typing import Any
 import pytest
 from httpx import AsyncClient, Response
 from racing_coach_core.schemas.telemetry import SessionFrame, TelemetryFrame
-from racing_coach_server.telemetry.models import Lap, Telemetry, TrackSession
+from racing_coach_server.telemetry.models import Telemetry
+from racing_coach_server.track_sessions.laps.models import Lap
+from racing_coach_server.track_sessions.models import TrackSession
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -189,7 +191,7 @@ class TestTelemetryEndpoints:
         await db_session.commit()
 
         # Act
-        response = await test_client.get("/api/v1/telemetry/sessions/latest")
+        response = await test_client.get("/api/v1/track_sessions/latest")
 
         # Assert
         assert response.status_code == 200
@@ -204,7 +206,7 @@ class TestTelemetryEndpoints:
     ) -> None:
         """Test retrieving latest session when none exists."""
         # Act
-        response = await test_client.get("/api/v1/telemetry/sessions/latest")
+        response = await test_client.get("/api/v1/track_sessions/latest")
 
         # Assert
         assert response.status_code == 404

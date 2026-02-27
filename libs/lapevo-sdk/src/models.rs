@@ -361,3 +361,17 @@ pub struct MetricsUploadResponse {
     pub message: String,
     pub lap_metrics_id: String,
 }
+
+/// Response from the reference lap endpoint.
+#[derive(Debug, Clone, Deserialize)]
+pub struct ReferenceLapResponse {
+    pub lap_id: String,
+    pub lap_time: f64,
+    pub total_corners: i32,
+    pub total_braking_zones: i32,
+    pub average_corner_speed: f64,
+    pub max_speed: f64,
+    pub min_speed: f64,
+    pub braking_zones: Vec<BrakingMetrics>,
+    pub corners: Vec<CornerMetrics>,
+}

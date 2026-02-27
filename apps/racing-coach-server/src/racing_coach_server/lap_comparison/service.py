@@ -1,12 +1,12 @@
 """Service for comparing laps and computing performance deltas."""
 
-from racing_coach_server.metrics.comparison_schemas import (
+from racing_coach_server.lap_comparison.schemas import (
     BrakingZoneComparison,
     CornerComparison,
     LapComparisonResponse,
     LapComparisonSummary,
 )
-from racing_coach_server.telemetry.models import BrakingMetricsDB, CornerMetricsDB, LapMetricsDB
+from racing_coach_server.lap_metrics.models import BrakingMetricsDB, CornerMetricsDB, LapMetricsDB
 
 # Distance threshold for matching zones/corners (10% of lap distance)
 DISTANCE_MATCH_THRESHOLD = 0.10
@@ -26,23 +26,17 @@ class LapComparisonService:
         Args:
             baseline_metrics: Metrics for the baseline lap
             comparison_metrics: Metrics for the lap to compare against baseline
-
-        Returns:
-            LapComparisonResponse containing summary and per-zone/corner comparisons
         """
-        # Compare braking zones
         braking_comparisons = LapComparisonService._compare_braking_zones(
             baseline_metrics.braking_zones,
             comparison_metrics.braking_zones,
         )
 
-        # Compare corners
         corner_comparisons = LapComparisonService._compare_corners(
             baseline_metrics.corners,
             comparison_metrics.corners,
         )
 
-        # Compute summary
         summary = LapComparisonService._compute_summary(
             baseline_metrics,
             comparison_metrics,
@@ -61,21 +55,11 @@ class LapComparisonService:
         baseline_zones: list[BrakingMetricsDB],
         comparison_zones: list[BrakingMetricsDB],
     ) -> list[BrakingZoneComparison]:
-        """
-        Compare braking zones using distance-based matching.
-
-        Args:
-            baseline_zones: Braking zones from baseline lap
-            comparison_zones: Braking zones from comparison lap
-
-        Returns:
-            List of braking zone comparisons
-        """
+        """Compare braking zones using distance-based matching."""
         comparisons: list[BrakingZoneComparison] = []
         matched_comparison_indices: set[int] = set()
 
         for baseline_idx, baseline_zone in enumerate(baseline_zones):
-            # Find closest matching zone in comparison lap by distance
             best_match_idx: int | None = None
             best_match_distance_diff: float = float("inf")
 
@@ -83,7 +67,6 @@ class LapComparisonService:
                 if comp_idx in matched_comparison_indices:
                     continue
 
-                # Calculate distance difference
                 distance_diff = abs(
                     baseline_zone.braking_point_distance - comp_zone.braking_point_distance
                 )
@@ -95,12 +78,10 @@ class LapComparisonService:
                     best_match_idx = comp_idx
                     best_match_distance_diff = distance_diff
 
-            # Create comparison
             if best_match_idx is not None:
                 matched_comparison_indices.add(best_match_idx)
                 comp_zone = comparison_zones[best_match_idx]
 
-                # Compute deltas
                 comparison = BrakingZoneComparison(
                     zone_index=baseline_idx,
                     matched_zone_index=best_match_idx,
@@ -123,7 +104,6 @@ class LapComparisonService:
                     ),
                 )
             else:
-                # No match found - zone only exists in baseline lap
                 comparison = BrakingZoneComparison(
                     zone_index=baseline_idx,
                     matched_zone_index=None,
@@ -147,21 +127,11 @@ class LapComparisonService:
         baseline_corners: list[CornerMetricsDB],
         comparison_corners: list[CornerMetricsDB],
     ) -> list[CornerComparison]:
-        """
-        Compare corners using distance-based matching.
-
-        Args:
-            baseline_corners: Corners from baseline lap
-            comparison_corners: Corners from comparison lap
-
-        Returns:
-            List of corner comparisons
-        """
+        """Compare corners using distance-based matching."""
         comparisons: list[CornerComparison] = []
         matched_comparison_indices: set[int] = set()
 
         for baseline_idx, baseline_corner in enumerate(baseline_corners):
-            # Find closest matching corner in comparison lap by apex distance
             best_match_idx: int | None = None
             best_match_distance_diff: float = float("inf")
 
@@ -169,7 +139,6 @@ class LapComparisonService:
                 if comp_idx in matched_comparison_indices:
                     continue
 
-                # Calculate distance difference (use apex as reference point)
                 distance_diff = abs(baseline_corner.apex_distance - comp_corner.apex_distance)
 
                 if (
@@ -179,12 +148,10 @@ class LapComparisonService:
                     best_match_idx = comp_idx
                     best_match_distance_diff = distance_diff
 
-            # Create comparison
             if best_match_idx is not None:
                 matched_comparison_indices.add(best_match_idx)
                 comp_corner = comparison_corners[best_match_idx]
 
-                # Compute deltas
                 comparison = CornerComparison(
                     corner_index=baseline_idx,
                     matched_corner_index=best_match_idx,
@@ -201,7 +168,6 @@ class LapComparisonService:
                     - baseline_corner.corner_distance,
                 )
             else:
-                # No match found - corner only exists in baseline lap
                 comparison = CornerComparison(
                     corner_index=baseline_idx,
                     matched_corner_index=None,
@@ -222,16 +188,7 @@ class LapComparisonService:
 
     @staticmethod
     def _compare_trail_braking(baseline_has: bool, comparison_has: bool) -> str:
-        """
-        Compare trail braking usage between two laps.
-
-        Args:
-            baseline_has: Whether baseline lap used trail braking
-            comparison_has: Whether comparison lap used trail braking
-
-        Returns:
-            String describing trail braking comparison
-        """
+        """Compare trail braking usage between two laps."""
         if baseline_has and comparison_has:
             return "both"
         elif baseline_has and not comparison_has:
@@ -248,24 +205,11 @@ class LapComparisonService:
         braking_comparisons: list[BrakingZoneComparison],
         corner_comparisons: list[CornerComparison],
     ) -> LapComparisonSummary:
-        """
-        Compute summary statistics for the lap comparison.
-
-        Args:
-            baseline_metrics: Baseline lap metrics
-            comparison_metrics: Comparison lap metrics
-            braking_comparisons: List of braking zone comparisons
-            corner_comparisons: List of corner comparisons
-
-        Returns:
-            LapComparisonSummary with overall comparison stats
-        """
-        # Calculate lap time delta
+        """Compute summary statistics for the lap comparison."""
         lap_time_delta = None
         if baseline_metrics.lap_time is not None and comparison_metrics.lap_time is not None:
             lap_time_delta = comparison_metrics.lap_time - baseline_metrics.lap_time
 
-        # Count matched zones/corners
         matched_braking_zones = sum(
             1 for bc in braking_comparisons if bc.matched_zone_index is not None
         )

@@ -1,4 +1,4 @@
-"""Service for telemetry data management."""
+"""Service for raw telemetry frame data management."""
 
 import logging
 from uuid import UUID

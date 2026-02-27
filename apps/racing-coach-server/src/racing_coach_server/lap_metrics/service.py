@@ -8,18 +8,14 @@ from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from racing_coach_server.sessions.exceptions import LapNotFoundError
-from racing_coach_server.telemetry.models import (
-    BrakingMetricsDB,
-    CornerMetricsDB,
-    Lap,
-    LapMetricsDB,
-)
+from racing_coach_server.lap_metrics.models import BrakingMetricsDB, CornerMetricsDB, LapMetricsDB
+from racing_coach_server.track_sessions.laps.exceptions import LapNotFoundError
+from racing_coach_server.track_sessions.laps.models import Lap
 
 logger = logging.getLogger(__name__)
 
 
-class MetricsService:
+class LapMetricsService:
     """Service for lap metrics operations."""
 
     def __init__(self, db: AsyncSession) -> None:
@@ -34,13 +30,6 @@ class MetricsService:
         Add or update metrics for a lap (upsert pattern).
 
         If metrics already exist for this lap, they are deleted and replaced.
-
-        Args:
-            lap_metrics: The metrics dataclass from the core library
-            lap_id: The ID of the lap
-
-        Returns:
-            LapMetricsDB: The created metrics record
 
         Raises:
             LapNotFoundError: If the lap does not exist
@@ -127,15 +116,7 @@ class MetricsService:
         return db_lap_metrics
 
     async def get_lap_metrics(self, lap_id: UUID) -> LapMetricsDB | None:
-        """
-        Get metrics for a specific lap.
-
-        Args:
-            lap_id: The ID of the lap
-
-        Returns:
-            LapMetricsDB | None: The metrics record with relationships loaded, or None
-        """
+        """Get metrics for a specific lap with relationships eagerly loaded."""
         stmt = (
             select(LapMetricsDB)
             .where(LapMetricsDB.lap_id == lap_id)

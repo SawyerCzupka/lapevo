@@ -1,4 +1,4 @@
-"""Schemas for lap comparison API responses."""
+"""Schemas for the lap_comparison API responses."""
 
 from pydantic import BaseModel
 

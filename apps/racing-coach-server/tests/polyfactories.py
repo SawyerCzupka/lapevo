@@ -14,14 +14,10 @@ from racing_coach_core.schemas.telemetry import (
 )
 from racing_coach_server.auth.models import DeviceAuthorization, DeviceToken, User, UserSession
 from racing_coach_server.auth.utils import hash_password, hash_token
-from racing_coach_server.telemetry.models import (
-    BrakingMetricsDB,
-    CornerMetricsDB,
-    Lap,
-    LapMetricsDB,
-    Telemetry,
-    TrackSession,
-)
+from racing_coach_server.lap_metrics.models import BrakingMetricsDB, CornerMetricsDB, LapMetricsDB
+from racing_coach_server.telemetry.models import Telemetry
+from racing_coach_server.track_sessions.laps.models import Lap
+from racing_coach_server.track_sessions.models import TrackSession
 
 # ============================================================================
 # Pydantic Schema Factories

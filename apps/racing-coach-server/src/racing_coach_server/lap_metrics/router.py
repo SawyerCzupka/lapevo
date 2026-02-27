@@ -1,21 +1,19 @@
-"""API router for metrics endpoints."""
+"""API router for lap_metrics endpoints."""
 
 import logging
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from racing_coach_core.algs.events import BrakingMetrics, CornerMetrics
 
 from racing_coach_server.database.engine import transactional_session
-from racing_coach_server.dependencies import AsyncSessionDep, MetricsServiceDep
-from racing_coach_server.metrics.comparison_schemas import LapComparisonResponse
-from racing_coach_server.metrics.comparison_service import LapComparisonService
-from racing_coach_server.metrics.schemas import (
+from racing_coach_server.dependencies import AsyncSessionDep, LapMetricsServiceDep
+from racing_coach_server.lap_metrics.schemas import (
     LapMetricsResponse,
-    MetricsUploadRequest,
-    MetricsUploadResponse,
+    LapMetricsUploadRequest,
+    LapMetricsUploadResponse,
 )
-from racing_coach_server.sessions.exceptions import LapNotFoundError
+from racing_coach_server.track_sessions.laps.exceptions import LapNotFoundError
 
 logger = logging.getLogger(__name__)
 
@@ -24,19 +22,19 @@ router = APIRouter()
 
 @router.post(
     "/lap",
-    response_model=MetricsUploadResponse,
-    tags=["metrics"],
+    response_model=LapMetricsUploadResponse,
+    tags=["lap_metrics"],
     operation_id="uploadLapMetrics",
 )
 async def upload_lap_metrics(
-    request: MetricsUploadRequest,
-    metrics_service: MetricsServiceDep,
+    request: LapMetricsUploadRequest,
+    lap_metrics_service: LapMetricsServiceDep,
     db: AsyncSessionDep,
-) -> MetricsUploadResponse:
+) -> LapMetricsUploadResponse:
     """
     Upload metrics for a lap.
 
-    This endpoint accepts extracted lap metrics and stores them in the database.
+    Accepts extracted lap metrics and stores them in the database.
     If metrics already exist for the lap, they are replaced (upsert pattern).
     """
     try:
@@ -46,14 +44,14 @@ async def upload_lap_metrics(
 
     try:
         async with transactional_session(db):
-            db_metrics = await metrics_service.add_or_update_lap_metrics(
+            db_metrics = await lap_metrics_service.add_or_update_lap_metrics(
                 lap_metrics=request.lap_metrics,
                 lap_id=lap_id,
             )
 
             logger.info(f"Successfully uploaded metrics for lap {lap_id}")
 
-            return MetricsUploadResponse(
+            return LapMetricsUploadResponse(
                 status="success",
                 message=f"Metrics uploaded for lap {lap_id}",
                 lap_metrics_id=str(db_metrics.id),
@@ -71,12 +69,12 @@ async def upload_lap_metrics(
 @router.get(
     "/lap/{lap_id}",
     response_model=LapMetricsResponse,
-    tags=["metrics"],
+    tags=["lap_metrics"],
     operation_id="getLapMetrics",
 )
 async def get_lap_metrics(
     lap_id: str,
-    metrics_service: MetricsServiceDep,
+    lap_metrics_service: LapMetricsServiceDep,
 ) -> LapMetricsResponse:
     """
     Get metrics for a specific lap.
@@ -88,12 +86,11 @@ async def get_lap_metrics(
     except ValueError as e:
         raise HTTPException(status_code=400, detail="Invalid lap_id format") from e
 
-    db_metrics = await metrics_service.get_lap_metrics(uuid_lap_id)
+    db_metrics = await lap_metrics_service.get_lap_metrics(uuid_lap_id)
 
     if not db_metrics:
         raise HTTPException(status_code=404, detail=f"Metrics not found for lap {lap_id}")
 
-    # Convert database models to response schema
     return LapMetricsResponse(
         lap_id=str(db_metrics.lap_id),
         lap_time=db_metrics.lap_time,
@@ -139,55 +136,3 @@ async def get_lap_metrics(
             for c in db_metrics.corners
         ],
     )
-
-
-@router.get(
-    "/compare",
-    response_model=LapComparisonResponse,
-    tags=["metrics"],
-    operation_id="compareLaps",
-)
-async def compare_laps(
-    metrics_service: MetricsServiceDep,
-    lap_id_1: str = Query(..., description="UUID of the baseline lap"),
-    lap_id_2: str = Query(..., description="UUID of the lap to compare against baseline"),
-) -> LapComparisonResponse:
-    """
-    Compare two laps and return detailed performance deltas.
-
-    This endpoint compares metrics from two laps and returns:
-    - Summary statistics (lap time delta, speed deltas, etc.)
-    - Per-braking-zone comparisons with matched zones and deltas
-    - Per-corner comparisons with matched corners and deltas
-
-    Zones and corners are matched based on distance (closest match within threshold).
-    """
-    try:
-        uuid_lap_id_1 = UUID(lap_id_1)
-        uuid_lap_id_2 = UUID(lap_id_2)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail="Invalid lap_id format") from e
-
-    # Get metrics for both laps
-    baseline_metrics = await metrics_service.get_lap_metrics(uuid_lap_id_1)
-    if not baseline_metrics:
-        raise HTTPException(
-            status_code=404, detail=f"Metrics not found for baseline lap {lap_id_1}"
-        )
-
-    comparison_metrics = await metrics_service.get_lap_metrics(uuid_lap_id_2)
-    if not comparison_metrics:
-        raise HTTPException(
-            status_code=404, detail=f"Metrics not found for comparison lap {lap_id_2}"
-        )
-
-    # Compare laps
-    comparison = LapComparisonService.compare_laps(baseline_metrics, comparison_metrics)
-
-    logger.info(
-        f"Compared laps {lap_id_1} vs {lap_id_2}: "
-        f"time delta = {comparison.summary.lap_time_delta}s, "
-        f"matched {comparison.summary.matched_corners}/{comparison.summary.total_corners_baseline} corners"  # noqa: E501
-    )
-
-    return comparison

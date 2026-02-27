@@ -1,4 +1,4 @@
-"""Pydantic schemas for metrics API."""
+"""Pydantic schemas for the lap_metrics API."""
 
 from pydantic import BaseModel
 from racing_coach_core.algs.events import (
@@ -8,14 +8,14 @@ from racing_coach_core.algs.events import (
 )
 
 
-class MetricsUploadRequest(BaseModel):
+class LapMetricsUploadRequest(BaseModel):
     """Request model for uploading lap metrics."""
 
     lap_metrics: LapMetrics
     lap_id: str  # UUID as string from client
 
 
-class MetricsUploadResponse(BaseModel):
+class LapMetricsUploadResponse(BaseModel):
     """Response model for metrics upload."""
 
     status: str
