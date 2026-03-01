@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use tokio::sync::watch;
 
+#[derive(Clone)]
 pub struct PositionService {
     rx: watch::Receiver<PositionState>,
     // last_state: Box<PositionState>,

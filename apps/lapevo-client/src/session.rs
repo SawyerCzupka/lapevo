@@ -8,7 +8,7 @@ use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
 use crate::events::RacingEvent;
-use crate::handlers::{LapHandler, LogHandler, MetricsHandler};
+use crate::handlers::{BrakingHandler, LapHandler, LogHandler, MetricsHandler};
 use crate::pos_service::{PositionService, PositionState};
 use crate::telem::extract_session_frame;
 
@@ -43,19 +43,21 @@ pub async fn run_session(
 
     let bus = EventBus::new(10000);
 
-    let (mut pos_service, tx) = PositionService::new();
+    let (pos_service, tx) = PositionService::new();
 
     // Set up handler registry
     let mut registry = HandlerRegistry::new();
     registry.register(LapHandler::new(client.clone(), session.clone()));
     registry.register(LogHandler::new(500));
     registry.register(MetricsHandler::new(client.clone()));
+    registry.register(BrakingHandler::new());
 
     // Start all handlers
     let handles = registry.run(bus.clone());
 
+    let mut pos_clone = pos_service.clone();
     tokio::spawn(async move {
-        let state = pos_service.wait_until_position(0.8).await;
+        let state = pos_clone.wait_until_position(0.8).await;
 
         println!("[POS_SVC_USER] At 80% Lap Percentage!");
         println!("[POS_SVC_USER] State: {state}");
@@ -142,6 +144,7 @@ pub async fn run_client_loop(
 
         info!("Source ready");
 
+        // Source Active, run main collection loop.
         loop {
             let session = tokio::select! {
                 result = source.wait_for_session() => { result? }

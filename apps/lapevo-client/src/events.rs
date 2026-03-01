@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use uuid::Uuid;
 
-use lapevo_sdk::{SessionFrame, TelemetryFrame as ApiTelemetryFrame};
+use lapevo_sdk::{BrakingMetrics, SessionFrame, TelemetryFrame as ApiTelemetryFrame};
 use lapevo_telemetry::TelemetryFrame;
 use lapevo_eventbus::EventLike;
 
@@ -11,6 +11,7 @@ use lapevo_eventbus::EventLike;
 pub enum RacingEventKind {
     TelemetryFrameCollected,
     LapComplete,
+    BrakingZoneDetected,
 }
 
 /// Main event enum for racing telemetry events.
@@ -21,6 +22,7 @@ pub enum RacingEventKind {
 pub enum RacingEvent {
     TelemetryFrameCollected(Arc<TelemetryFrame>),
     LapComplete(LapCompletePayload),
+    BrakingZoneDetected(BrakingZonePayload),
 }
 
 impl EventLike for RacingEvent {
@@ -30,6 +32,7 @@ impl EventLike for RacingEvent {
         match self {
             RacingEvent::TelemetryFrameCollected(_) => RacingEventKind::TelemetryFrameCollected,
             RacingEvent::LapComplete(_) => RacingEventKind::LapComplete,
+            RacingEvent::BrakingZoneDetected(_) => RacingEventKind::BrakingZoneDetected,
         }
     }
 
@@ -37,9 +40,17 @@ impl EventLike for RacingEvent {
         [
             RacingEventKind::TelemetryFrameCollected,
             RacingEventKind::LapComplete,
+            RacingEventKind::BrakingZoneDetected,
         ]
         .into_iter()
     }
+}
+
+/// Completed braking zone data emitted in real-time as driver releases the brake.
+#[derive(Clone, Debug)]
+pub struct BrakingZonePayload {
+    pub metrics: BrakingMetrics,
+    pub lap_number: i32,
 }
 
 /// Completed lap data.
