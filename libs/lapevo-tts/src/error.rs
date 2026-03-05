@@ -21,6 +21,9 @@ pub enum TtsError {
     #[error("playback failed: {0}")]
     Playback(String),
 
+    #[error("archive extraction failed: {0}")]
+    Archive(String),
+
     #[error("model file not found: {0}")]
     ModelNotFound(PathBuf),
 

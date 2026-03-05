@@ -1,3 +1,4 @@
+mod download;
 mod error;
 mod kokoro;
 mod player;
@@ -6,7 +7,6 @@ pub use error::{Result, TtsError};
 
 pub mod backend {
     pub use crate::kokoro::KokoroBackend;
-    pub use kokoro_tts::Voice as KokoroVoice;
 }
 
 use async_trait::async_trait;
@@ -30,13 +30,13 @@ pub struct Tts {
 }
 
 impl Tts {
-    /// Create a TTS instance with default settings (Kokoro backend, platform cache dir).
+    /// Create a TTS instance with the Kokoro backend (sherpa-rs) and platform cache dir.
     pub async fn new() -> Result<Self> {
-        let models_dir = dirs::cache_dir()
+        let cache_dir = dirs::cache_dir()
             .ok_or(TtsError::CacheDir)?
-            .join("lapevo-tts");
-        let backend =
-            backend::KokoroBackend::new(models_dir, backend::KokoroVoice::AmPuck(1.0)).await?;
+            .join("lapevo")
+            .join("tts");
+        let backend = backend::KokoroBackend::new(cache_dir).await?;
         Self::with_backend(backend)
     }
 

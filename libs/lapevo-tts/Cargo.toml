@@ -7,9 +7,18 @@ edition = "2024"
 async-trait = "0.1"
 thiserror = "2.0"
 tracing = "0.1"
-tokio = { version = "1", features = ["fs", "io-util"] }
+tokio = { version = "1", features = ["fs", "io-util", "rt", "sync"] }
 rodio = "0.21"
-kokoro-tts = "0.3.2"
 reqwest = { version = "0.12", features = ["stream"] }
 futures-util = "0.3"
 dirs = "6"
+sherpa-rs = { version = "0.6.8", features = ["tts"] }
+tar = "0.4"
+bzip2 = "0.5"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+tracing-subscriber = "0.3"
+
+[[example]]
+name = "speak"
