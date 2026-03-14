@@ -1,12 +1,12 @@
 # https://moonrepo.dev/docs/config/workspace
-$schema: './cache/schemas/workspace.json'
+# yaml-language-server: $schema=./cache/schemas/workspace.json
 
 # extends: './shared/workspace.yml'
 
 # projects are only apps/libs that include a moon.yml file.
 projects:
-  - 'apps/*/moon.yml'
-  - 'libs/*/moon.yml'
+  - "apps/*/moon.yml"
+  - "libs/*/moon.yml"
 vcs:
-  manager: 'git'
-  defaultBranch: 'main'
+  client: "git"
+  defaultBranch: "main"

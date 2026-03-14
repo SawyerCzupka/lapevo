@@ -1,104 +1,103 @@
-$schema: '../../.moon/cache/schemas/project.json'
+$schema: "../../.moon/cache/schemas/project.json"
 
-type: 'library'
-language: 'python'
+layer: "library"
+language: "python"
 
 tags:
-  - 'python'
-  - 'rust'
-  - 'maturin'
-  - 'core'
+  - "python"
+  - "rust"
+  - "maturin"
+  - "core"
 
 fileGroups:
   python-sources:
-    - 'src/**/*.py'
+    - "src/**/*.py"
   rust-sources:
-    - 'rust/src/**/*.rs'
+    - "rust/src/**/*.rs"
   tests:
-    - 'tests/**/*.py'
+    - "tests/**/*.py"
 
 tasks:
   # Python tasks that need Rust build first (overrides inherited to add deps)
   test:
-    command: 'uv run pytest'
+    command: "uv run pytest"
     inputs:
-      - 'src/**/*.py'
-      - 'tests/**/*.py'
-      - 'pyproject.toml'
-      - 'uv.lock'
+      - "src/**/*.py"
+      - "tests/**/*.py"
+      - "pyproject.toml"
+      - "uv.lock"
     deps:
-      - '~:build-rust'
+      - "~:build-rust"
     options:
       cache: true
 
   test-unit:
-    command: 'uv run pytest -m unit'
+    command: "uv run pytest -m unit"
     inputs:
-      - 'src/**/*.py'
-      - 'tests/**/*.py'
+      - "src/**/*.py"
+      - "tests/**/*.py"
     deps:
-      - '~:build-rust'
+      - "~:build-rust"
     options:
       cache: true
 
   typecheck:
-    command: 'uv run basedpyright'
+    command: "uv run basedpyright"
     inputs:
-      - 'src/**/*.py'
-      - 'pyproject.toml'
+      - "src/**/*.py"
+      - "pyproject.toml"
     deps:
-      - '~:build-rust'
+      - "~:build-rust"
     options:
       cache: true
 
   # Rust/Maturin tasks
   build-rust:
-    command: 'uv run maturin develop'
+    command: "uv run maturin develop"
     inputs:
-      - 'rust/src/**/*.rs'
-      - 'rust/Cargo.toml'
-      - 'pyproject.toml'
+      - "rust/src/**/*.rs"
+      - "rust/Cargo.toml"
+      - "pyproject.toml"
     options:
       cache: true
 
   build-rust-release:
-    command: 'uv run maturin build --release'
+    command: "uv run maturin build --release"
     inputs:
-      - 'rust/src/**/*.rs'
-      - 'rust/Cargo.toml'
-      - 'pyproject.toml'
+      - "rust/src/**/*.rs"
+      - "rust/Cargo.toml"
+      - "pyproject.toml"
     outputs:
-      - 'target/wheels'
+      - "target/wheels"
     options:
       cache: true
 
   rust-check:
-    command: 'cargo check --manifest-path rust/Cargo.toml'
+    command: "cargo check --manifest-path rust/Cargo.toml"
     inputs:
-      - 'rust/src/**/*.rs'
-      - 'rust/Cargo.toml'
+      - "rust/src/**/*.rs"
+      - "rust/Cargo.toml"
     options:
       cache: true
 
   rust-clippy:
-    command: 'cargo clippy --manifest-path rust/Cargo.toml -- -D warnings'
+    command: "cargo clippy --manifest-path rust/Cargo.toml -- -D warnings"
     inputs:
-      - 'rust/src/**/*.rs'
-      - 'rust/Cargo.toml'
+      - "rust/src/**/*.rs"
+      - "rust/Cargo.toml"
     options:
       cache: true
 
   rust-fmt:
-    command: 'cargo fmt --manifest-path rust/Cargo.toml'
+    command: "cargo fmt --manifest-path rust/Cargo.toml"
     inputs:
-      - 'rust/src/**/*.rs'
-    local: true
+      - "rust/src/**/*.rs"
     options:
       cache: false
 
   rust-fmt-check:
-    command: 'cargo fmt --manifest-path rust/Cargo.toml --check'
+    command: "cargo fmt --manifest-path rust/Cargo.toml --check"
     inputs:
-      - 'rust/src/**/*.rs'
+      - "rust/src/**/*.rs"
     options:
       cache: true

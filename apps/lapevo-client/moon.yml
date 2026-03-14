@@ -1,6 +1,6 @@
 $schema: "../../.moon/cache/schemas/project.json"
 
-type: "application"
+layer: "application"
 language: "rust"
 
 tags:

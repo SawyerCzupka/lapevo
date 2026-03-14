@@ -1,6 +1,6 @@
 # Common tasks for JavaScript projects using npm
 # Inherited by projects with tags: ['javascript'] (via tag-* filename convention)
-$schema: "../cache/schemas/tasks.json"
+# yaml-language-server: $schema=../cache/schemas/tasks.json
 
 tasks:
   build:

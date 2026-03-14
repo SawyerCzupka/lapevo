@@ -1,32 +1,31 @@
-$schema: '../../.moon/cache/schemas/project.json'
+$schema: "../../.moon/cache/schemas/project.json"
 
-type: 'library'
-language: 'rust'
+layer: "library"
+language: "rust"
 
 tags:
-  - 'rust'
-  - 'telemetry'
-  - 'iracing'
+  - "rust"
+  - "telemetry"
+  - "iracing"
 
 dependsOn:
-  - 'pitwall-derive'
+  - "pitwall-derive"
 
 fileGroups:
   sources:
-    - 'src/**/*.rs'
+    - "src/**/*.rs"
   tests:
-    - 'tests/**/*.rs'
+    - "tests/**/*.rs"
   benches:
-    - 'benches/**/*.rs'
+    - "benches/**/*.rs"
 
 tasks:
   bench:
-    command: 'cargo bench'
+    command: "cargo bench"
     inputs:
-      - 'src/**/*.rs'
-      - 'benches/**/*.rs'
-      - 'Cargo.toml'
-    local: true
+      - "src/**/*.rs"
+      - "benches/**/*.rs"
+      - "Cargo.toml"
     options:
       cache: false
 

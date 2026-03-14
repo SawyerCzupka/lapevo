@@ -1,55 +1,55 @@
-$schema: '../../.moon/cache/schemas/project.json'
+$schema: "../../.moon/cache/schemas/project.json"
 
 id: server
-type: 'application'
-language: 'python'
+layer: "application"
+language: "python"
 
 tags:
-  - 'python'
-  - 'fastapi'
-  - 'backend'
+  - "python"
+  - "fastapi"
+  - "backend"
 
 dependsOn:
-  - 'racing-coach-core'
+  - "racing-coach-core"
 
 fileGroups:
   sources:
-    - 'src/**/*.py'
+    - "src/**/*.py"
   tests:
-    - 'tests/**/*.py'
+    - "tests/**/*.py"
   migrations:
-    - 'migrations/**/*.py'
+    - "migrations/**/*.py"
 
 tasks:
   dev:
-    command: 'uv run fastapi dev src/racing_coach_server/app.py'
+    command: "uv run fastapi dev src/racing_coach_server/app.py"
     inputs:
-      - 'src/**/*.py'
+      - "src/**/*.py"
     # local: true
     options:
       persistent: true
       cache: false
 
   test-integration:
-    command: 'uv run pytest -m integration'
+    command: "uv run pytest -m integration"
     inputs:
-      - 'src/**/*.py'
-      - 'tests/**/*.py'
-      - 'pyproject.toml'
+      - "src/**/*.py"
+      - "tests/**/*.py"
+      - "pyproject.toml"
     options:
       cache: false
 
   migrate:
-    command: 'uv run alembic upgrade head'
+    command: "uv run alembic upgrade head"
     inputs:
-      - 'migrations/**/*.py'
-      - 'alembic.ini'
+      - "migrations/**/*.py"
+      - "alembic.ini"
     # local: true
     options:
       cache: false
 
   migrate-create:
-    command: 'uv run alembic revision --autogenerate'
+    command: "uv run alembic revision --autogenerate"
     # local: true
     options:
       cache: false

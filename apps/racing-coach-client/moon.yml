@@ -1,28 +1,27 @@
-$schema: '../../.moon/cache/schemas/project.json'
+$schema: "../../.moon/cache/schemas/project.json"
 
-type: 'application'
-language: 'python'
+layer: "application"
+language: "python"
 
 tags:
-  - 'python'
-  - 'desktop'
-  - 'pyside6'
+  - "python"
+  - "desktop"
+  - "pyside6"
 
 dependsOn:
-  - 'racing-coach-core'
+  - "racing-coach-core"
 
 fileGroups:
   sources:
-    - 'src/**/*.py'
+    - "src/**/*.py"
   tests:
-    - 'tests/**/*.py'
+    - "tests/**/*.py"
 
 tasks:
   run:
-    command: 'uv run run-client'
+    command: "uv run run-client"
     inputs:
-      - 'src/**/*.py'
-    local: true
+      - "src/**/*.py"
     options:
       persistent: true
       cache: false
