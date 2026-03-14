@@ -73,7 +73,7 @@ async fn interactive_loop(
                 let mut source =
                     IbtReplaySource::new(config.file_path.clone(), config.speed)?;
                 if let Some(session) = source.wait_for_session().await? {
-                    run_session(client, session.stream, CancellationToken::new()).await?;
+                    run_session(client, session.stream, CancellationToken::new(), None).await?;
                 }
 
                 println!("\n[SESSION COMPLETE]");

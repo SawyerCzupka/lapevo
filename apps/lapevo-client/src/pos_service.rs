@@ -42,4 +42,19 @@ impl PositionService {
             }
         }
     }
+
+    /// Wait until the lap number advances beyond the current lap.
+    /// Useful for scheduling actions on the next lap.
+    pub async fn wait_for_next_lap(&mut self) -> PositionState {
+        let current_lap = self.rx.borrow().lap_number;
+        loop {
+            if self.rx.changed().await.is_err() {
+                return self.rx.borrow().clone();
+            }
+            let state = self.rx.borrow().clone();
+            if state.lap_number > current_lap {
+                return state;
+            }
+        }
+    }
 }

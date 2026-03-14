@@ -3,10 +3,12 @@ use std::sync::Arc;
 use lapevo_eventbus::{EventBus, HandlerRegistry};
 use lapevo_sdk::ServerAPIClient;
 use lapevo_telemetry::{SourceStatus, TelemetryError, TelemetrySource, TelemetryStream};
+use lapevo_tts::Tts;
 use thiserror::Error;
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info};
 
+use crate::coaching::CoachingService;
 use crate::events::RacingEvent;
 use crate::handlers::{BrakingHandler, LapHandler, LogHandler, MetricsHandler};
 use crate::pos_service::{PositionService, PositionState};
@@ -31,6 +33,7 @@ pub async fn run_session(
     client: &Arc<ServerAPIClient>,
     mut stream: Box<dyn TelemetryStream>,
     token: CancellationToken,
+    tts: Option<Arc<Tts>>,
 ) -> Result<(), SessionError> {
     // Extract session info
     let session_info = stream.session();
@@ -55,12 +58,9 @@ pub async fn run_session(
     // Start all handlers
     let handles = registry.run(bus.clone());
 
-    let mut pos_clone = pos_service.clone();
-    tokio::spawn(async move {
-        let state = pos_clone.wait_until_position(0.8).await;
-
-        println!("[POS_SVC_USER] At 80% Lap Percentage!");
-        println!("[POS_SVC_USER] State: {state}");
+    // Spawn coaching service if TTS is available
+    let coaching_handle = tts.map(|tts| {
+        CoachingService::new(bus.clone(), tts, pos_service.clone(), token.clone()).spawn()
     });
 
     // Run telemetry collection (publisher) using the stream
@@ -117,6 +117,10 @@ pub async fn run_session(
         let _ = handle.await;
     }
 
+    if let Some(handle) = coaching_handle {
+        let _ = handle.await;
+    }
+
     Ok(())
 }
 
@@ -130,6 +134,7 @@ pub async fn run_client_loop(
     client: &Arc<ServerAPIClient>,
     mut source: Box<dyn TelemetrySource>,
     token: CancellationToken,
+    tts: Option<Arc<Tts>>,
 ) -> Result<(), SessionError> {
     loop {
         info!("{}", source.status_message());
@@ -161,7 +166,7 @@ pub async fn run_client_loop(
                 session.info.track_name, session.info.car_name, session.info.session_type
             );
 
-            if let Err(e) = run_session(client, session.stream, token.clone()).await {
+            if let Err(e) = run_session(client, session.stream, token.clone(), tts.clone()).await {
                 error!("Session error: {e}");
             }
 

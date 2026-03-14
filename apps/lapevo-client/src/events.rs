@@ -51,6 +51,8 @@ impl EventLike for RacingEvent {
 pub struct BrakingZonePayload {
     pub metrics: BrakingMetrics,
     pub lap_number: i32,
+    /// Lap distance percentage (0.0–1.0) at the braking point.
+    pub braking_point_pct: f32,
 }
 
 /// Completed lap data.

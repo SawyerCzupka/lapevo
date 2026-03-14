@@ -58,14 +58,22 @@ impl BrakingHandlerState {
             None
         } else {
             // Not braking: finalize if a zone was active.
-            self.active_zone.take().map(|zone| BrakingZonePayload {
-                metrics: finalize_braking_zone(
-                    &zone.frames,
-                    zone.max_pressure,
-                    zone.min_speed,
-                    steering_threshold,
-                ),
-                lap_number: zone.start_lap,
+            self.active_zone.take().map(|zone| {
+                let braking_point_pct = zone
+                    .frames
+                    .first()
+                    .map(|f| f.lap_distance_pct)
+                    .unwrap_or(0.0);
+                BrakingZonePayload {
+                    metrics: finalize_braking_zone(
+                        &zone.frames,
+                        zone.max_pressure,
+                        zone.min_speed,
+                        steering_threshold,
+                    ),
+                    lap_number: zone.start_lap,
+                    braking_point_pct,
+                }
             })
         }
     }

@@ -28,12 +28,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Lapevo Client v{}", env!("CARGO_PKG_VERSION"));
 
     // Initialize TTS
-    let _tts = match Tts::new().await {
+    let tts: Option<Arc<Tts>> = match Tts::new().await {
         Ok(tts) => {
             if let Err(e) = tts.speak("Lapevo client started").await {
                 warn!("TTS startup speak failed: {e}");
             }
-            Some(tts)
+            Some(Arc::new(tts))
         }
         Err(e) => {
             warn!("Failed to initialize TTS: {e}");
@@ -72,7 +72,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         } => {
             if daemon {
                 let source = IbtReplaySource::new(file, speed)?;
-                run_client_loop(&client, Box::new(source), token).await?;
+                run_client_loop(&client, Box::new(source), token, tts.clone()).await?;
             } else {
                 let config = ReplayConfig {
                     file_path: file,
@@ -86,7 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             #[cfg(target_os = "windows")]
             {
                 let source = lapevo_iracing::PitwallLiveSource::new();
-                run_client_loop(&client, Box::new(source), token).await?;
+                run_client_loop(&client, Box::new(source), token, tts.clone()).await?;
             }
             #[cfg(not(target_os = "windows"))]
             {
